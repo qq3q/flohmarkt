@@ -44,7 +44,7 @@ class DeviceController extends AbstractController
 
          return new Response('', Response::HTTP_NOT_FOUND);
       }
-      $units = $unitRepo->findByUserId(4);
+      $units = $unitRepo->findByUserId($user->getId());
 
       $data = array_map(function(QueuedUnit $unit) {
          return [
