@@ -1,0 +1,53 @@
+image: qq3q/deploy:ubuntu22_php8_1_node18
+
+definitions:
+  caches:
+    php:
+      key:
+        files:
+          - rest/composer.lock
+      path: rest/vendor
+  steps:
+    - step: &build_rest
+        name: Build Rest
+        script:
+          - cd rest
+          - composer install
+          - rm -f .env.local
+          - touch .env.local
+          - echo "DATABASE_URL=$DATABASE_URL" >> .env.local
+        caches:
+          - node
+          - composer
+          - php
+        artifacts:
+          #          - app/build/**
+          - rest/vendor/**
+          - .env.local
+    - step: &deploy_rest
+        name: Deploy rest files
+        script:
+          - #rm -rf assets .git node_modules spec sql tests test-resources
+          - rm -rf rest/.idea rest/var
+          - cd rest
+          - tar -czf /tmp/rest.tar.gz .
+          - scp /tmp/rest.tar.gz $USER@$SERVER:/tmp/
+          - ssh $USER@$SERVER "mkdir -p /app/floh2-rest"
+          - ssh $USER@$SERVER "rm -rf /app/floh2-rest/tmp/ && mkdir /app/floh2-rest/tmp && cd /app/floh2-rest/tmp && tar -xzf /tmp/app.tar.gz && rm /tmp/app.tar.gz"
+          - ssh $USER@$SERVER chown -R www-data:www-data /app/floh2-rest/tmp
+          - ssh $USER@$SERVER "rm -rf /app/floh2-rest/last && mv /app/floh2-rest/current /app/floh2-rest/last && mv /app/floh2-rest/tmp /app/floh2-rest/current"
+    - step: &migrate_rest
+        name: Migrate rest DB
+        script:
+          - ssh $USER@$SERVER "sudo -u www-data /app/floh2-rest/current/bin/console doctrine:migrations:migrate --no-interaction --all-or-nothing"
+
+pipelines:
+  custom:
+    deploy-rest:
+      - stage:
+          name: Deploy rest
+          deployment: production
+          steps:
+            - step: *build_rest
+            - step: *deploy_rest
+            - step: *migrate_rest
