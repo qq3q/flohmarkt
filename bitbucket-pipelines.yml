@@ -25,12 +25,12 @@ definitions:
     - step: &rest_deploy
         name: Rest Deploy
         script:
-          - rm -rf rest/.idea rest/var
           - cd rest
+          #- rm -rf rest/var
           - tar -czf /tmp/rest.tar.gz .
           - scp /tmp/rest.tar.gz $USER@$SERVER:/tmp/
           - ssh $USER@$SERVER "mkdir -p /app/floh2-rest"
-          - ssh $USER@$SERVER "rm -rf /app/floh2-rest/tmp/ && mkdir /app/floh2-rest/tmp && cd /app/floh2-rest/tmp && tar -xzf /tmp/app.tar.gz && rm /tmp/app.tar.gz"
+          - ssh $USER@$SERVER "rm -rf /app/floh2-rest/tmp/ && mkdir /app/floh2-rest/tmp && cd /app/floh2-rest/tmp && tar -xzf /tmp/rest.tar.gz && rm /tmp/rest.tar.gz"
           - ssh $USER@$SERVER chown -R www-data:www-data /app/floh2-rest/tmp
           - ssh $USER@$SERVER "rm -rf /app/floh2-rest/last && mv /app/floh2-rest/current /app/floh2-rest/last && mv /app/floh2-rest/tmp /app/floh2-rest/current"
     - step: &rest_migrate
