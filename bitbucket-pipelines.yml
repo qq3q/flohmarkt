@@ -1,4 +1,4 @@
-image: qq3q/deploy:ubuntu22_php8_1_node18
+image: qq3q/deploy:ubuntu24_php8_3_node20
 
 definitions:
   caches:
@@ -8,8 +8,8 @@ definitions:
           - rest/composer.lock
       path: rest/vendor
   steps:
-    - step: &build_rest
-        name: Build Rest
+    - step: &rest_build
+        name: Rest Build
         script:
           - cd rest
           - composer install
@@ -17,17 +17,14 @@ definitions:
           - touch .env.local
           - echo "DATABASE_URL=$DATABASE_URL" >> .env.local
         caches:
-          - node
           - composer
           - php
         artifacts:
-          #          - app/build/**
           - rest/vendor/**
-          - .env.local
-    - step: &deploy_rest
-        name: Deploy rest files
+          - rest/.env.local
+    - step: &rest_deploy
+        name: Rest Deploy
         script:
-          - #rm -rf assets .git node_modules spec sql tests test-resources
           - rm -rf rest/.idea rest/var
           - cd rest
           - tar -czf /tmp/rest.tar.gz .
@@ -36,18 +33,18 @@ definitions:
           - ssh $USER@$SERVER "rm -rf /app/floh2-rest/tmp/ && mkdir /app/floh2-rest/tmp && cd /app/floh2-rest/tmp && tar -xzf /tmp/app.tar.gz && rm /tmp/app.tar.gz"
           - ssh $USER@$SERVER chown -R www-data:www-data /app/floh2-rest/tmp
           - ssh $USER@$SERVER "rm -rf /app/floh2-rest/last && mv /app/floh2-rest/current /app/floh2-rest/last && mv /app/floh2-rest/tmp /app/floh2-rest/current"
-    - step: &migrate_rest
-        name: Migrate rest DB
+    - step: &rest_migrate
+        name: Rest Migrate DB
         script:
           - ssh $USER@$SERVER "sudo -u www-data /app/floh2-rest/current/bin/console doctrine:migrations:migrate --no-interaction --all-or-nothing"
 
 pipelines:
   custom:
-    deploy-rest:
+    rest:
       - stage:
           name: Deploy rest
-          deployment: production
+          deployment: Production
           steps:
-            - step: *build_rest
-            - step: *deploy_rest
-            - step: *migrate_rest
+            - step: *rest_build
+            - step: *rest_deploy
+            - step: *rest_migrate
