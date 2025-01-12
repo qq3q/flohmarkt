@@ -37,6 +37,7 @@ class DeviceController extends AbstractController
       return new Response('', Response::HTTP_CREATED);
    }
 
+   // @todo test route, remove it
    #[Route('/queued-units/{token}', name: 'device_get_queued_units', methods: ['GET'])]
    public function getQueuedUnits(string $token, UserRepository $userRepo, QueuedUnitRepository $unitRepo): Response {
       $user = $userRepo->findOneByDeviceToken($token);

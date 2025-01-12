@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Event;
 use App\Entity\Transaction;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -15,6 +16,14 @@ class TransactionRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Transaction::class);
     }
+
+   /**
+    * @return Event[]
+    */
+//   public function findByEvent(Event $event): array
+//   {
+//      return $this->findBy(['event' => $event]);
+//   }
 
     //    /**
     //     * @return Transaction[] Returns an array of Transaction objects

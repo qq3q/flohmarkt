@@ -7,15 +7,18 @@ use App\Entity\User;
 use App\Repository\AccessTokenRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Core\Role\RoleHierarchyInterface;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class SecurityController extends AbstractController
 {
    #[Route('/login', name: 'security_login', methods: ['POST'])]
-   public function login(#[CurrentUser] ?User $user, AccessTokenRepository $repo, EntityManagerInterface $em): JsonResponse
+   public function login(#[CurrentUser] ?User $user, AccessTokenRepository $repo, EntityManagerInterface $em, RoleHierarchyInterface $roleHierarchy): JsonResponse
    {
       if (null === $user)
       {
@@ -38,6 +41,22 @@ class SecurityController extends AbstractController
       return $this->json([
          'user'  => $user->getUserIdentifier(),
          'token' => $token,
+         'roles' => $roleHierarchy->getReachableRoleNames($user->getRoles()),
       ]);
+   }
+
+   #[Route('/logout', name: 'security_logout', methods: ['GET'])]
+   public function logout(#[CurrentUser] ?User $user, Security $security, AccessTokenRepository $repo, EntityManagerInterface $em): Response {
+      if (null === $user)
+      {
+         return $this->json([
+            'message' => 'You are not logged in.',
+         ], Response::HTTP_UNAUTHORIZED);
+      }
+      $repo->removeUserTokens($user->getUsername());
+      $em->flush();
+      $security->logout(false);
+
+      return new Response('', Response::HTTP_NO_CONTENT);
    }
 }

@@ -10,78 +10,107 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: EventRepository::class)]
 class Event
 {
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
+   #[ORM\Id]
+   #[ORM\GeneratedValue]
+   #[ORM\Column]
+   private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $title = null;
+   #[ORM\Column(length: 255)]
+   private ?string $title = null;
+   #[ORM\Column]
+   private float $donationRate = 0.15;
+   /**
+    * @var Collection<int, Transaction>
+    */
+   #[ORM\OneToMany(targetEntity: Transaction::class, mappedBy: 'event', orphanRemoval: true)]
+   private Collection $transactions;
+   #[ORM\Column]
+   private \DateTimeImmutable $createdAt;
+   #[ORM\Column]
+   private ?bool $active = null;
 
-    /**
-     * @var Collection<int, Transaction>
-     */
-    #[ORM\OneToMany(targetEntity: Transaction::class, mappedBy: 'event', orphanRemoval: true)]
-    private Collection $transactions;
+   public function __construct()
+   {
+      $this->transactions = new ArrayCollection();
+      $this->createdAt    = new \DateTimeImmutable();
+   }
 
-    #[ORM\Column]
-    private \DateTimeImmutable $createdAt;
+   public function getId(): ?int
+   {
+      return $this->id;
+   }
 
-    public function __construct()
-    {
-        $this->transactions = new ArrayCollection();
-        $this->createdAt = new \DateTimeImmutable();
-    }
+   public function getTitle(): ?string
+   {
+      return $this->title;
+   }
 
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
+   public function setTitle(string $title): static
+   {
+      $this->title = $title;
 
-    public function getTitle(): ?string
-    {
-        return $this->title;
-    }
+      return $this;
+   }
 
-    public function setTitle(string $title): static
-    {
-        $this->title = $title;
+   public function getDonationRate(): float
+   {
+      return $this->donationRate;
+   }
 
-        return $this;
-    }
+   public function setDonationRate(float $donationRate): Event
+   {
+      $this->donationRate = $donationRate;
 
-    /**
-     * @return Collection<int, Transaction>
-     */
-    public function getTransactions(): Collection
-    {
-        return $this->transactions;
-    }
+      return $this;
+   }
 
-    public function addTransaction(Transaction $transaction): static
-    {
-        if (!$this->transactions->contains($transaction)) {
-            $this->transactions->add($transaction);
-            $transaction->setEvent($this);
-        }
+   /**
+    * @return Collection<int, Transaction>
+    */
+   public function getTransactions(): Collection
+   {
+      return $this->transactions;
+   }
 
-        return $this;
-    }
+   public function addTransaction(Transaction $transaction): static
+   {
+      if (!$this->transactions->contains($transaction))
+      {
+         $this->transactions->add($transaction);
+         $transaction->setEvent($this);
+      }
 
-    public function removeTransaction(Transaction $transaction): static
-    {
-        if ($this->transactions->removeElement($transaction)) {
-            // set the owning side to null (unless already changed)
-            if ($transaction->getEvent() === $this) {
-                $transaction->setEvent(null);
-            }
-        }
+      return $this;
+   }
 
-        return $this;
-    }
+   public function removeTransaction(Transaction $transaction): static
+   {
+      if ($this->transactions->removeElement($transaction))
+      {
+         // set the owning side to null (unless already changed)
+         if ($transaction->getEvent() === $this)
+         {
+            $transaction->setEvent(null);
+         }
+      }
 
-    public function getCreatedAt(): \DateTimeImmutable
-    {
-        return $this->createdAt;
-    }
+      return $this;
+   }
+
+   public function getCreatedAt(): \DateTimeImmutable
+   {
+      return $this->createdAt;
+   }
+
+   public function isActive(): ?bool
+   {
+      return $this->active;
+   }
+
+   public function setActive(bool $active): static
+   {
+      $this->active = $active;
+
+      return $this;
+   }
 }

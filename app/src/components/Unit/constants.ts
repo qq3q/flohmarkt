@@ -1,0 +1,1 @@
+export const SELLER_ID_WIDTH = '5em';

@@ -16,6 +16,11 @@ class EventRepository extends ServiceEntityRepository
         parent::__construct($registry, Event::class);
     }
 
+    public function findActiveEvent(): Event | null {
+
+       return $this->findOneBy(['active' => true]);
+    }
+
     //    /**
     //     * @return Event[] Returns an array of Event objects
     //     */

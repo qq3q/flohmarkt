@@ -6,6 +6,7 @@ use App\Entity\QueuedUnit;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * @extends ServiceEntityRepository<QueuedUnit>
@@ -23,6 +24,21 @@ class QueuedUnitRepository extends ServiceEntityRepository
    public function findByUserId(int $userId): array
    {
       return $this->findBy(['userId' => $userId]);
+   }
+
+   /**
+    * @return QueuedUnit[]
+    */
+   public function clearByUserId(int $userId, bool $doFlush = false): array {
+      $units = $this->findByUserId($userId);
+      foreach ($units as $unit) {
+         $this->getEntityManager()->remove($unit);
+      }
+      if($doFlush) {
+         $this->getEntityManager()->flush();
+      }
+
+      return $units;
    }
 
    //    /**

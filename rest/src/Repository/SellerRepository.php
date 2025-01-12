@@ -16,6 +16,11 @@ class SellerRepository extends ServiceEntityRepository
         parent::__construct($registry, Seller::class);
     }
 
+    public function findAllActiveSellers(): array {
+
+       return $this->findBy(['active' => true]);
+    }
+
     //    /**
     //     * @return Seller[] Returns an array of Seller objects
     //     */

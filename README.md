@@ -1,7 +1,24 @@
+Todo V1
+=======
+
+* Abbrechen des Unit-Bearbeitungsformulars
+
+Zukünftige Features
+===================
+
+* Frontend absichern: Wenn eine neue Transaktion gesichert wird und während des Requests ein Fehler auftritt,
+  kann es passieren, dass die Transaktion gesichert wurde, das FE aber einen Fehler erhält. In diesem Fall würde
+  ein erneutes Speichern zu einem Duplikat in der DB führen.
+* Umbau zur Webapp, so dass FE unabh. von Internetverbindung ist
+
+TMP
+===
+
 Features
 
 * Nutzer mit Anmeldung
-* Anlegen von mehreren Flohmärkten
+* Anlegen von mehreren Events (Flohmärkten)
+* Verkäufer bearbeiten
 * Transaktionsliste: bearbeiten, löschen, editieren
   * Transaktion bearbeiten / neu
     * Paypal / Kasse

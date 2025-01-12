@@ -11,7 +11,6 @@ use Doctrine\ORM\Mapping as ORM;
 class Seller
 {
    #[ORM\Id]
-   #[ORM\GeneratedValue]
    #[ORM\Column]
    private ?int $id = null;
 
@@ -26,6 +25,13 @@ class Seller
    public function __construct()
    {
       $this->units = new ArrayCollection();
+   }
+
+   public function setId(int $id): static
+   {
+      $this->id = $id;
+
+      return $this;
    }
 
    public function getId(): ?int

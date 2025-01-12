@@ -1,22 +1,30 @@
-import React                                       from 'react';
-import ReactDOM                                    from 'react-dom/client';
+import React                         from 'react';
+import ReactDOM                      from 'react-dom/client';
 import './index.css';
-import reportWebVitals                             from './reportWebVitals';
-import {createBrowserRouter, Link, RouterProvider} from 'react-router-dom';
-import StartPage                                   from './pages/StartPage';
-import ScanPage                                    from './pages/ScanPage';
-
-const router = createBrowserRouter([{
-   path   : "/",
-   element: <StartPage/>
-}, {
-   path   : "about",
-   element: <ScanPage/>
-},]);
+import reportWebVitals               from './reportWebVitals';
+import {SecurityStoreProvider}       from './stores/SecurityStore';
+import AppRouterProvider             from './container/AppRouterProvider';
+import {CashPointEventStoreProvider} from './stores/CashPointEventStore';
+import {TransactionStoreProvider}    from './stores/TransactionStore';
+import {QueuedUnitsStoreProvider}    from './stores/QueuedUnitsStore';
+import {ConfigProvider}              from 'antd';
+import {themeConfig}                 from './themeConfig';
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 root.render(<React.StrictMode>
-   <RouterProvider router={router}/>
+   <SecurityStoreProvider>
+      <CashPointEventStoreProvider>
+         <QueuedUnitsStoreProvider>
+            <TransactionStoreProvider>
+               <ConfigProvider
+                  theme={themeConfig}
+               >
+                  <AppRouterProvider/>
+               </ConfigProvider>
+            </TransactionStoreProvider>
+         </QueuedUnitsStoreProvider>
+      </CashPointEventStoreProvider>
+   </SecurityStoreProvider>
 </React.StrictMode>);
 
 // If you want to start measuring performance in your app, pass a function
