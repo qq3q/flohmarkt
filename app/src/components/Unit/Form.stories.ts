@@ -16,7 +16,8 @@ const meta = {
       // backgroundColor: {control: 'color'},
    }, // Use `fn` to spy on the onClick arg, which will appear in the actions panel once invoked: https://storybook.js.org/docs/essentials/actions#action-args
    args: {
-      onReady: fn(),
+      onReady         : fn(),
+      updateSyncStatus: fn(),
    },
 } satisfies Meta<typeof Form>;
 

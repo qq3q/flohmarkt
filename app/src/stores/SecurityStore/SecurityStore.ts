@@ -1,13 +1,14 @@
 import {action, computed, makeObservable, observable, runInAction} from 'mobx';
 import {loginRequest, logoutRequest}                               from '../../requests/requests';
 import {Role}                                                      from './types';
+import {RootStore}                                                 from '../RootStore/RootStore';
 
 export class SecurityStore {
    private _user: string | null = null;
    private _token: string | null = null;
    private _roles: string[] = [];
 
-   constructor() {
+   constructor(public readonly rootStore: RootStore) {
       makeObservable<SecurityStore, '_user' | '_token' | '_roles'>(this, {
          _user   : observable,
          _token  : observable,

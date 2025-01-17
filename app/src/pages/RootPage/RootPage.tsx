@@ -1,16 +1,16 @@
 import {Outlet, useNavigate} from 'react-router';
-import {observer}            from 'mobx-react-lite';
-import {useSecurityStore}    from '../../stores/SecurityStore';
-import {RoutePath}           from '../../container/AppRouterProvider/types';
+import {observer}         from 'mobx-react-lite';
+import {RoutePath}        from '../../container/AppRouterProvider/types';
 import LogoutButton          from '../../components/LogoutButton';
 import Navigation            from '../../components/Navigation';
 import React                 from 'react';
 import {useNavigationItems}  from '../../hooks/useNavigationItems';
 import {Layout}          from 'antd';
 import {Content, Header} from 'antd/es/layout/layout';
+import {useRootStore}        from '../../stores/RootStore';
 
 const RootPage = observer(() => {
-   const securityStore = useSecurityStore();
+   const {securityStore} = useRootStore();
    const navigate = useNavigate();
    const navItems = useNavigationItems();
    const onLogout = async() => {

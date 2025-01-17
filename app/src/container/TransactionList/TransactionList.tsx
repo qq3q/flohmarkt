@@ -1,8 +1,7 @@
 import {observer}               from 'mobx-react-lite';
-import {useCashPointEventStore} from '../../stores/CashPointEventStore';
-import {useMemo}                from 'react';
-import {useTransactionStore} from '../../stores/TransactionStore';
+import {useMemo}             from 'react';
 import {Button, Flex, List}  from 'antd';
+import {useRootStore}           from '../../stores/RootStore';
 
 const columns = [{
    title    : 'Erstellt',
@@ -19,12 +18,11 @@ const columns = [{
 }]
 
 const TransactionList = observer(() => {
-   const cashPointStore = useCashPointEventStore();
-   const transactionStore = useTransactionStore();
-   const eventModel = cashPointStore.eventModel;
+   const {cashPointEventStore, transactionStore} = useRootStore();
+   const eventModel = cashPointEventStore.eventModel;
 
    const data = useMemo(() => eventModel.transactionModels.map(t => {
-      const canEdit = !transactionStore.dirty && transactionStore.id !== t.data.id;
+      const canEdit = transactionStore.id !== t.data.id;
 
       return {
          createdAt: t.data.createdAt,
@@ -32,7 +30,7 @@ const TransactionList = observer(() => {
          canEdit,
          edit: canEdit ? () => transactionStore.open(t.data) : () => {},
       }
-   }), [eventModel, transactionStore.dirty, transactionStore.id])
+   }), [eventModel, transactionStore.id])
 
    return <List
       dataSource={data}

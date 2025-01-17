@@ -1,13 +1,13 @@
 import React     from 'react';
 import LoginForm from '../../components/LoginForm';
 import {observer}         from 'mobx-react-lite';
-import {useSecurityStore} from '../../stores/SecurityStore';
-import {Alert}                 from 'antd';
+import {Alert}            from 'antd';
 import {useNavigate} from 'react-router';
 import {RoutePath} from '../../container/AppRouterProvider/types';
+import {useRootStore} from '../../stores/RootStore';
 
 const LoginPage = observer(() => {
-   const securityStore = useSecurityStore();
+   const {securityStore} = useRootStore();
    const [failed, setFailed] = React.useState(false);
    const navigate = useNavigate();
 

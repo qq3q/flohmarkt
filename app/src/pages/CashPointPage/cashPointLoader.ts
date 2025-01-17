@@ -1,14 +1,13 @@
 import {redirect, Router} from 'react-router';
-import {securityStore}    from '../../stores/SecurityStore';
 import {RoutePath}        from '../../container/AppRouterProvider/types';
-import {cashPointEventStore} from '../../stores/CashPointEventStore';
+import {rootStore}           from '../../stores/RootStore';
 
 export const cashPointLoader = async(): Promise<Response | null> => {
-   if(!securityStore.hasRole('ROLE_CASH_POINT')) {
+   if(!rootStore.securityStore.hasRole('ROLE_CASH_POINT')) {
 
       return redirect(RoutePath.Login);
    }
-   await cashPointEventStore.sync();
+   await rootStore.cashPointEventStore.sync();
 
    return null;
 }

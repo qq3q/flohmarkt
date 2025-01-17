@@ -1,3 +1,6 @@
-import {Unit} from '../CashPointEventStore/types';
+export type SubscriberCallback = (units: QueuedUnit[]) => void;
 
-export type SubscriberCallback = (units: Unit[]) => void;
+export interface QueuedUnit {
+   amount: number,
+   sellerId: number,
+}

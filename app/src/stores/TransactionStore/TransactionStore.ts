@@ -2,7 +2,7 @@ import {action, computed, makeAutoObservable, observable, runInAction} from 'mob
 import {PaymentType, Transaction, Unit}                                from '../CashPointEventStore/types';
 import {TransactionModel}                                              from '../../models/TransactionModel';
 import {saveTransactionRequest}                                        from '../../requests/requests';
-import {QueuedUnitsStore}                                              from '../QueuedUnitsStore/QueuedUnitsStore';
+import {RootStore}                                                     from '../RootStore/RootStore';
 
 const NEW_TRANSACTION: Transaction = {
    id         : null,
@@ -16,38 +16,29 @@ export class TransactionStore {
    private _paymentType: PaymentType | null = null;
    private _units: Unit[] | null = null;
    // private _currInd: number | null = null;
-   private _readOnly: boolean = true;
    // @todo rename to _synced and inverse boolean logic => true to false
-   private _dirty: boolean = false;
+   private _changed: boolean = false;
    private _saving = false;
    private _lastSaveFailed = false;
 
-   constructor(private readonly _queuedUnitsStore: QueuedUnitsStore,) {
-      makeAutoObservable<TransactionStore, '_originalTransaction' | '_paymentType' | '_units' | /*'_currInd' |*/ '_readOnly' | '_dirty' | '_saving' | '_lastSaveFailed' | 'addUnits'>(this, {
+   constructor(public readonly rootStore: RootStore) {
+      makeAutoObservable<TransactionStore, '_originalTransaction' | '_paymentType' | '_units' | /*'_currInd' |*/ '_changed' | '_saving' | '_lastSaveFailed' | 'addUnits'>(this, {
          _originalTransaction: observable,
          _paymentType        : observable,
-         _units              : observable,
-         // _currInd            : observable,
-         _readOnly            : observable,
-         _dirty              : observable,
-         _saving             : observable,
-         _lastSaveFailed     : observable,
-         paymentType   : computed,
-         opened        : computed,
-         id            : computed,
-         units         : computed,
-         // currInd       : computed,
-         readOnly       : computed,
-         dirty         : computed,
+         _units              : observable, // _currInd            : observable,
+         _changed       : observable,
+         _saving        : observable,
+         _lastSaveFailed: observable,
+         paymentType    : computed,
+         opened         : computed,
+         id             : computed,
+         units          : computed, // currInd       : computed,
+         changed       : computed,
          open          : action,
          reset         : action,
          close         : action,
-         setReadOnly: action,
          setPaymentType: action,
-         updateUnit    : action,
-         addUnit       : action,
-         addUnits      : action,
-         // setCurrInd    : action,
+         addUnits      : action, // setCurrInd    : action,
       });
    }
 
@@ -93,14 +84,9 @@ export class TransactionStore {
    //    return this._currInd;
    // }
 
-   get readOnly(): boolean {
+   get changed(): boolean {
 
-      return this._readOnly;
-   }
-
-   get dirty(): boolean {
-
-      return this._dirty;
+      return this._changed;
    }
 
    get saving(): boolean {
@@ -128,72 +114,49 @@ export class TransactionStore {
    }
 
    async open(transaction: Transaction | null = null): Promise<void> {
-      if(transaction === null) {
+      if (transaction === null) {
          transaction = NEW_TRANSACTION;
-         this._readOnly = false;
-      }
-      else {
-         this._readOnly = true;
       }
       this._originalTransaction = transaction;
       this._paymentType = transaction.paymentType;
       this._units = transaction.units.map(u => ({...u}))
+      this.rootStore.unitsFormStore.open(this.units, this.rootStore.cashPointEventStore.sellerIds);
       // this._currInd = null;
-      this._dirty = false;
+      this._changed = false;
       this._saving = false;
       this._lastSaveFailed = false;
-      await this._queuedUnitsStore.subscribe(this.addUnits);
    }
 
    reset(): void {
       this._paymentType = this.originalTransaction.paymentType;
       this._units = this.originalTransaction.units.map(u => ({...u}))
+      this.rootStore.unitsFormStore.open(this.units, this.rootStore.cashPointEventStore.sellerIds);
       // this._currInd = null;
-      // this._readOnly = false;
-      this._dirty = false;
+      this._changed = false;
       this._saving = false;
       this._lastSaveFailed = false;
    }
 
    close(): void {
-      this._queuedUnitsStore.unsubscribe();
       this._originalTransaction = null;
       this._paymentType = null;
       this._units = null;
+      this.rootStore.unitsFormStore.close();
       // this._currInd = null;
-      this._readOnly = true;
-      this._dirty = false;
+      this._changed = false;
       this._saving = false;
       this._lastSaveFailed = false;
    }
 
-   setReadOnly(readOnly: boolean): void {
-      this._readOnly = readOnly;
-   }
-
    setPaymentType(paymentType: PaymentType): void {
       this._paymentType = paymentType;
-      this._dirty = true;
+      this._changed = true;
    }
 
-   updateUnit(currInd: number, sellerId: number, amount: number): void {
-      const units = [...this.units];
-      units[currInd] = {
-         ...units[currInd],
-         sellerId,
-         amount
-      }
-      this._units = units;
-      // this._currInd = null;
-      this._dirty = true;
-   }
-
-   addUnit = (sellerId: number, amount: number) => {
-      this.addUnits([{
-         id: null,
-         sellerId,
-         amount
-      }])
+   updateFromForm() {
+      this._units = this.rootStore.unitsFormStore.units;
+      this._changed = true;
+      this.rootStore.unitsFormStore.open(this.units, this.rootStore.cashPointEventStore.sellerIds);
    }
 
    // setCurrInd(currInd: number | null): void {
@@ -207,12 +170,11 @@ export class TransactionStore {
          const id = await saveTransactionRequest(this.transaction);
          runInAction(() => {
             this._saving = false;
-            this._readOnly = true;
-            this._dirty = false;
+            this._changed = false;
             this._originalTransaction = {
                ...this.originalTransaction,
-               id: id.length > 0 ? Number(id) : this.originalTransaction.id,
-               units: this.units,
+               id         : id.length > 0 ? Number(id) : this.originalTransaction.id,
+               units      : this.units,
                paymentType: this.paymentType,
             }
          })
@@ -222,11 +184,5 @@ export class TransactionStore {
             this._lastSaveFailed = true;
          })
       }
-   }
-
-   private addUnits = (units: Unit[]) => {
-      this._units = [...this.units, ...units];
-      // this._currInd = null;
-      this._dirty = true;
    }
 }

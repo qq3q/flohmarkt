@@ -2,13 +2,14 @@ import {action, computed, makeObservable, observable, runInAction} from 'mobx';
 import {activeEventRequest, sellerIdsRequest,}                     from '../../requests/requests';
 import {CashPointEvent, CashPointEventStoreStatus,}                from './types';
 import {CashPointEventModel}                                       from '../../models/CashPointEventModel';
+import {RootStore}                                                 from '../RootStore/RootStore';
 
 export class CashPointEventStore {
    private _status: CashPointEventStoreStatus = 'not_synced';
    private _event: CashPointEvent | null = null;
    private _sellerIds: number[] | null = null;
 
-   constructor() {
+   constructor(public readonly rootStore: RootStore) {
       makeObservable<CashPointEventStore, '_status' | '_event' | '_sellerIds'>(this, {
          _status   : observable,
          _event    : observable,

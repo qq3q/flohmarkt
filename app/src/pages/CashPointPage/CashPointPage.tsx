@@ -1,13 +1,11 @@
-import {observer}                                            from 'mobx-react-lite';
-import {useCashPointEventStore}                              from '../../stores/CashPointEventStore';
-import {useTransactionStore}                                 from '../../stores/TransactionStore';
+import {observer} from 'mobx-react-lite';
 import {CheckboxOptionType, Layout, Radio, RadioChangeEvent} from 'antd';
-import * as UnitUI                                           from '../../components/Unit';
-import {formatCurrency}                                      from '../../utils/formatCurrency';
-import {PaymentType}                                         from '../../stores/CashPointEventStore/types';
-import {useEffect}                                           from 'react';
-import TransactionList                                       from '../../container/TransactionList';
-import {useQueuedUnitsStore}                                 from '../../stores/QueuedUnitsStore';
+import * as UnitUI from '../../components/Unit';
+import {formatCurrency} from '../../utils/formatCurrency';
+import {PaymentType} from '../../stores/CashPointEventStore/types';
+import {useEffect, useState} from 'react';
+import TransactionList from '../../container/TransactionList';
+import {useRootStore} from '../../stores/RootStore';
 
 // @todo from backend
 const paymentTypeOptions: CheckboxOptionType<PaymentType>[] = [{
@@ -18,14 +16,31 @@ const paymentTypeOptions: CheckboxOptionType<PaymentType>[] = [{
    value: 'PayPal',
 }]
 
+// used to force rendering of the forms after a reset
+const useFormKey = (): [(index: number) => string, () => void] => {
+   const [prefix, setPrefixKey] = useState<number>(0);
+   const getFormKey = (index: number): string => `${prefix}-${index}`;
+   const nextUniqueFormKey = () => setPrefixKey(prefix + 1);
+
+   return [getFormKey, nextUniqueFormKey];
+}
+
 const CashPointPage = observer(() => {
-   const cashPointStore = useCashPointEventStore();
-   const transactionStore = useTransactionStore();
-   const queuedUnitsStore = useQueuedUnitsStore();
+   const {
+      cashPointEventStore,
+      transactionStore,
+      queuedUnitsStore,
+      unitsFormStore
+   } = useRootStore();
+   const [getFormKey, nextUniqueFormKey] = useFormKey();
 
    const paymentTypeHandler = (ev: RadioChangeEvent) => {
       transactionStore.setPaymentType(ev.target.value);
    }
+
+   // const [activeRowInd, setActiveRowInd] = useState<number | null>(null);
+
+   // console.log('activeRowInd', activeRowInd)
 
    useEffect(() => {
       (async() => {
@@ -39,7 +54,7 @@ const CashPointPage = observer(() => {
       }
    }, []);
 
-   switch (cashPointStore.status) {
+   switch (cashPointEventStore.status) {
       case 'syncing':
          return <>Loading...</>;
       case 'synced':
@@ -52,7 +67,7 @@ const CashPointPage = observer(() => {
                   {transactionStore.lastSaveFailed && <p>Fehler beim Speichern</p>}
                   <Radio.Group
                      block
-                     disabled={transactionStore.readOnly}
+                     // disabled={transactionStore.readOnly}
                      options={paymentTypeOptions}
                      value={transactionStore.paymentType}
                      optionType="button"
@@ -60,52 +75,55 @@ const CashPointPage = observer(() => {
                      onChange={paymentTypeHandler}
                   />
                   <UnitUI.List>
-                     {transactionStore.units.map((unit, i) => <UnitUI.ListItem key={i}><UnitUI.Form
-                        disabled={transactionStore.readOnly}
-                        amount={unit.amount}
-                        sellerId={unit.sellerId}
-                        validSellerIds={cashPointStore.sellerIds}
-                        onReady={(sellerId, amount) => transactionStore.updateUnit(i, sellerId, amount)}
+                     {unitsFormStore.formDataArr.map((formData, i) => <UnitUI.ListItem><UnitUI.Form
+                        key={getFormKey(i)}
+                        autoFocus={unitsFormStore.formDataArr.length === 1}
+                        // disabled={transactionStore.readOnly /*|| (activeRowInd !== null && activeRowInd !== i)*/}
+                        formData={formData}
+                        onChange={(newFormValues) => {
+                           console.log('onChange', newFormValues)
+                           unitsFormStore.change(i, newFormValues)
+                        }}
+                        onTouch={(key) => unitsFormStore.touch(i, key)}
+                        // validSellerIds={cashPointEventStore.sellerIds}
+                        // updateSyncStatus={(synced) => setActiveRowInd(synced ? null : i)}
+                        // onReady={(sellerId, amount) => {
+                        //    transactionStore.updateUnit(i, sellerId, amount);
+                        //    setActiveRowInd(null);
+                        // }}
                      /></UnitUI.ListItem>)}
                   </UnitUI.List>
-                  {!transactionStore.readOnly && <UnitUI.Form
-                     amount={null}
-                     sellerId={null}
-                     validSellerIds={cashPointStore.sellerIds}
-                     autoFocus
-                     restoreAfterReady
-                     onReady={transactionStore.addUnit}
-                  />}
-                  {transactionStore.readOnly && <div>{formatCurrency(transactionStore.amount)}</div>}
-                  {!transactionStore.readOnly && <button
-                     disabled={!transactionStore.dirty}
+                  {!unitsFormStore.changed && unitsFormStore.formDataArr.length > 1 &&  <div>{formatCurrency(transactionStore.amount)}</div>}
+                  {(transactionStore.changed || unitsFormStore.changed) && !unitsFormStore.empty && unitsFormStore.valid && <button
+                     // disabled={!unitsFormStore.changed || !unitsFormStore.valid}
                      onClick={async() => {
+                        transactionStore.updateFromForm();
                         await transactionStore.save();
                         if (!transactionStore.lastSaveFailed) {
                            // transactionStore.open();
-                           await cashPointStore.sync();
+                           await cashPointEventStore.sync();
                         }
                      }}
                   >Speichern
                   </button>}
-                  {!transactionStore.readOnly && <button
-                     disabled={!transactionStore.dirty}
-                     onClick={() => transactionStore.reset()}
+                  {(transactionStore.changed || unitsFormStore.changed) && <button
+                     // disabled={!unitsFormStore.changed}
+                     onClick={() => {
+                        transactionStore.reset();
+                        // force rendering of the forms
+                        // nextUniqueFormKey();
+                     }}
                   >Zurücksetzen
                   </button>}
-                  {transactionStore.readOnly && <button
-                     disabled={transactionStore.dirty}
+                  {!transactionStore.changed && !unitsFormStore.changed && unitsFormStore.formDataArr.length > 1 && <button
                      onClick={() => transactionStore.open()}
                   >Neu
                   </button>}
-                  {transactionStore.readOnly && transactionStore.id !== null && <button>Löschen</button>}
-                  {transactionStore.readOnly && <button onClick={() => transactionStore.setReadOnly(false)}>
-                     Bearbeiten
-                  </button>}
+                  {!unitsFormStore.changed && transactionStore.id !== null && <button>Löschen</button>}
                </>}
             </Layout.Content>
             <Layout.Sider>
-               Title: {cashPointStore.eventModel.data.title}
+               Title: {cashPointEventStore.eventModel.data.title}
                <TransactionList/>
             </Layout.Sider>
          </Layout>

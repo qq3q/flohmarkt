@@ -1,9 +1,9 @@
 import {redirect, Router} from 'react-router';
-import {securityStore}    from '../../stores/SecurityStore';
+import {rootStore}    from '../../stores/RootStore';
 import {RoutePath}        from '../../container/AppRouterProvider/types';
 
 export const homeLoader = async() => {
-   if(!securityStore.loggedIn) {
+   if(!rootStore.securityStore.loggedIn) {
 
       return redirect(RoutePath.Login);
    }

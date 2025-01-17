@@ -1,30 +1,21 @@
-import React                         from 'react';
-import ReactDOM                      from 'react-dom/client';
+import React               from 'react';
+import ReactDOM            from 'react-dom/client';
 import './index.css';
-import reportWebVitals               from './reportWebVitals';
-import {SecurityStoreProvider}       from './stores/SecurityStore';
-import AppRouterProvider             from './container/AppRouterProvider';
-import {CashPointEventStoreProvider} from './stores/CashPointEventStore';
-import {TransactionStoreProvider}    from './stores/TransactionStore';
-import {QueuedUnitsStoreProvider}    from './stores/QueuedUnitsStore';
-import {ConfigProvider}              from 'antd';
-import {themeConfig}                 from './themeConfig';
+import reportWebVitals     from './reportWebVitals';
+import AppRouterProvider   from './container/AppRouterProvider';
+import {ConfigProvider}    from 'antd';
+import {themeConfig}       from './themeConfig';
+import {RootStoreProvider} from './stores/RootStore';
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 root.render(<React.StrictMode>
-   <SecurityStoreProvider>
-      <CashPointEventStoreProvider>
-         <QueuedUnitsStoreProvider>
-            <TransactionStoreProvider>
-               <ConfigProvider
-                  theme={themeConfig}
-               >
-                  <AppRouterProvider/>
-               </ConfigProvider>
-            </TransactionStoreProvider>
-         </QueuedUnitsStoreProvider>
-      </CashPointEventStoreProvider>
-   </SecurityStoreProvider>
+   <RootStoreProvider>
+      <ConfigProvider
+         theme={themeConfig}
+      >
+         <AppRouterProvider/>
+      </ConfigProvider>
+   </RootStoreProvider>
 </React.StrictMode>);
 
 // If you want to start measuring performance in your app, pass a function

@@ -3,6 +3,8 @@ import {decimalPointSplit}                                 from '../../utils/dec
 import PositiveIntegerInput                                from '../PositiveIntegerInput';
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {SELLER_ID_WIDTH}                                   from './constants';
+import {UnitFormData}                                      from '../../services/UnitFormService';
+import {TouchKey}                                          from '../../services/UnitFormService/types';
 
 interface FormValues {
    sellerId: string,
@@ -125,58 +127,35 @@ const useTouched = (): [boolean, boolean, (key: keyof TouchedData) => void, () =
 
 const Form = (props: {
    disabled?: boolean,
-   sellerId: number | null,
-   validSellerIds: number[],
-   amount: number | null,
+   formData: UnitFormData,
+   onChange: (newFormValues: Partial<FormValues>) => void,
+   onTouch: (key: TouchKey) => void,
    autoFocus?: boolean,
-   restoreAfterReady?: boolean,
-   updateSyncStatus: (synced: boolean) => void,
-   onReady: (sellerId: number, amount: number) => void,
 }) => {
    const {
       disabled = false,
-      sellerId,
-      validSellerIds,
-      amount,
+
+      formData,
+      onChange,
+      onTouch,
+
+      // amount,
       autoFocus,
-      restoreAfterReady,
-      updateSyncStatus,
-      onReady
+      // restoreAfterReady,
+      // updateSyncStatus,
+      // onReady
    } = props;
 
    const ref = useRef<HTMLInputElement>(null);
 
-   const initialFormValues = useRef<FormValues>(convertToFormValues({
-                                                                       sellerId,
-                                                                       amount
-                                                                    }));
-   const [formValues, setFormValues] = useState<FormValues>(initialFormValues.current);
-   useEffect(() => {
-      initialFormValues.current = convertToFormValues({
-                                                         sellerId,
-                                                         amount
-                                                      });
-      setFormValues(initialFormValues.current);
-   }, [sellerId, amount]);
    useEffect(() => {
       if (autoFocus) {
          ref.current?.focus();
       }
    }, [autoFocus]);
 
-   const unchanged = formValuesAreEqual(formValues, initialFormValues.current);
 
-   const changeHandler = (newFormValues: Partial<FormValues>) => {
-      const nextFormValues = {...formValues, ...newFormValues};
-      setFormValues(nextFormValues);
-      updateSyncStatus(formValuesAreEqual(nextFormValues, initialFormValues.current));
-   }
-
-   const [sellerIdTouched, amountTouched, touch, clearTouch] = useTouched();
-   const values = useMemo(() => convertToValues(formValues), [formValues]);
-   const validationResult = useMemo(() => validate(values, validSellerIds), [values]);
-
-   const errors = validationResult.getErrors(sellerIdTouched && validationResult.sellerIdInvalid, amountTouched && validationResult.amountInvalid);
+   const errors = formData.validationResult?.getErrors(formData.touched.sellerId, formData.touched.amount) ?? [];
 
 // @todo ids are not unique if more than one form is used
 
@@ -202,49 +181,49 @@ const Form = (props: {
                disabled={disabled}
                id="sellerId094353453"
                style={{width: SELLER_ID_WIDTH}}
-               value={formValues.sellerId}
+               value={formData.formValues.sellerId}
                onBlur={() => {
-                  if (amountTouched || formValues.sellerId.length > 0) {
-                     touch('sellerId')
+                  if (formData.touched.amount || formData.formValues.sellerId.length > 0) {
+                     onTouch('sellerId')
                   }
                }}
-               onChange={(value: string) => changeHandler({sellerId: value})}
+               onChange={(value: string) => onChange({sellerId: value})}
             />
             <PositiveIntegerInput
                id="beforePointAmount094353453"
                disabled={disabled}
                style={{width: '8em'}}
                addonAfter="Euro"
-               value={formValues.beforePointAmount}
-               onFocus={() => touch('sellerId')}
-               onBlur={() => touch('beforePointAmount')}
-               onChange={(value: string) => changeHandler({beforePointAmount: value})}
+               value={formData.formValues.beforePointAmount}
+               onFocus={() => onTouch('sellerId')}
+               onBlur={() => onTouch('beforePointAmount')}
+               onChange={(value: string) => onChange({beforePointAmount: value})}
             />
             <PositiveIntegerInput
                style={{width: '6.5em'}}
                disabled={disabled}
                addonAfter="Cent"
-               value={formValues.afterPointAmount}
-               onFocus={() => touch('sellerId')}
-               onBlur={() => touch('afterPointAmount')}
-               onChange={(value: string) => changeHandler({afterPointAmount: value})}
+               value={formData.formValues.afterPointAmount}
+               onFocus={() => onTouch('sellerId')}
+               onBlur={() => onTouch('afterPointAmount')}
+               onChange={(value: string) => onChange({afterPointAmount: value})}
             />
-            <Button
-               // disabled={disabled || errors.length > 0}
-               disabled={disabled || validationResult.invalid || unchanged}
-               type="primary"
-               onClick={() => {
-                  clearTouch();
-                  onReady(values.sellerId ?? 0, values.amount ?? 0);
-                  if (restoreAfterReady) {
-                     setFormValues(convertToFormValues({
-                                                          sellerId,
-                                                          amount
-                                                       }))
-                     autoFocus && ref.current?.focus();
-                  }
-               }}
-            >{sellerId === null ? 'Hinzufügen' : 'Aktualisieren'}</Button>
+            {/*<Button*/}
+            {/*   // disabled={disabled || errors.length > 0}*/}
+            {/*   disabled={disabled || validationResult.invalid || unchanged}*/}
+            {/*   type="primary"*/}
+            {/*   onClick={() => {*/}
+            {/*      clearTouch();*/}
+            {/*      onReady(values.sellerId ?? 0, values.amount ?? 0);*/}
+            {/*      if (restoreAfterReady) {*/}
+            {/*         setFormValues(convertToFormValues({*/}
+            {/*                                              sellerId,*/}
+            {/*                                              amount*/}
+            {/*                                           }))*/}
+            {/*         autoFocus && ref.current?.focus();*/}
+            {/*      }*/}
+            {/*   }}*/}
+            {/*>{sellerId === null ? 'Hinzufügen' : 'Aktualisieren'}</Button>*/}
 
          </Flex>
          <div id="test">

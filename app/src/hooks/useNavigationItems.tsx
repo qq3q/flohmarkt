@@ -1,11 +1,11 @@
 import {MenuProps}        from 'antd';
-import {useSecurityStore} from '../stores/SecurityStore';
 import {Link}             from 'react-router';
 import {RoutePath}        from '../container/AppRouterProvider/types';
 import React              from 'react';
+import {useRootStore}     from '../stores/RootStore';
 
 export const useNavigationItems = (): MenuProps['items'] => {
-   const securityStore = useSecurityStore();
+   const {securityStore} = useRootStore();
 
    const items: MenuProps['items'] = [];
    if(securityStore.hasRole('ROLE_CASH_POINT')) {

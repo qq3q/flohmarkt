@@ -1,18 +1,18 @@
-import {Unit}                                                          from '../CashPointEventStore/types';
 import {fetchUserQueuedUnitsRequest}                                   from '../../requests/requests';
 import {action, computed, makeAutoObservable, observable, runInAction} from 'mobx';
-import {SubscriberCallback}                                            from './types';
+import {QueuedUnit, SubscriberCallback}                                from './types';
+import {RootStore}                                                     from '../RootStore/RootStore';
 
 const INTERVAL = 2000;
 
 export class QueuedUnitsStore {
    private _subscriber: SubscriberCallback | null = null;
    private _running = false;
-   private _queue: Unit[] = [];
+   private _queue: QueuedUnit[] = [];
    private _interval: number | null = null;
    private _lastFetchFailed: boolean = false;
 
-   constructor() {
+   constructor(public readonly _: RootStore) {
       makeAutoObservable<QueuedUnitsStore, '_lastFetchFailed'>(this, {
          _lastFetchFailed: observable,
          lastFetchFailed : computed,
@@ -31,7 +31,7 @@ export class QueuedUnitsStore {
       return this._lastFetchFailed;
    }
 
-   subscribe(subscriber: SubscriberCallback): Promise<void> {
+   subscribe(subscriber: SubscriberCallback): void {
       this._subscriber = subscriber;
       this._lastFetchFailed = false;
       if (this._interval !== null) {
@@ -57,10 +57,14 @@ export class QueuedUnitsStore {
 
       // @ts-ignore
       this._interval = setInterval(fetchQueue, INTERVAL);
-      const promise = fetchQueue();
+
+      (() => {
+         return fetchQueue();
+      })()
+
       this._running = true;
 
-      return promise;
+      // return promise;
    }
 
    unsubscribe(): void {
@@ -73,8 +77,9 @@ export class QueuedUnitsStore {
    }
 
    private notify() {
-      console.log('notify', this._queue, this._subscriber)
+      console.log('notify:start');
       if (this._queue.length > 0 && this._subscriber) {
+         console.log('notify:execute', this._queue, this._subscriber)
          const units = this._queue;
          this._queue = [];
          this._subscriber(units);
