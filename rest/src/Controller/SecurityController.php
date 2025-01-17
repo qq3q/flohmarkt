@@ -18,7 +18,9 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class SecurityController extends AbstractController
 {
    #[Route('/login', name: 'security_login', methods: ['POST'])]
-   public function login(#[CurrentUser] ?User $user, AccessTokenRepository $repo, EntityManagerInterface $em, RoleHierarchyInterface $roleHierarchy): JsonResponse
+   public function login(#[CurrentUser] ?User   $user,
+                         AccessTokenRepository  $repo,
+                         EntityManagerInterface $em): Response
    {
       if (null === $user)
       {
@@ -38,15 +40,25 @@ class SecurityController extends AbstractController
       $em->persist($accessToken);
       $em->flush();
 
+      return new Response($token);
+   }
+
+   #[route('/user', name: 'security_user', methods: ['GET'])]
+   #[IsGranted('ROLE_USER')]
+   public function user(#[CurrentUser] ?User $user, RoleHierarchyInterface $roleHierarchy): JsonResponse
+   {
       return $this->json([
-         'user'  => $user->getUserIdentifier(),
-         'token' => $token,
+         'name'  => $user->getUserIdentifier(),
          'roles' => $roleHierarchy->getReachableRoleNames($user->getRoles()),
       ]);
    }
 
    #[Route('/logout', name: 'security_logout', methods: ['GET'])]
-   public function logout(#[CurrentUser] ?User $user, Security $security, AccessTokenRepository $repo, EntityManagerInterface $em): Response {
+   public function logout(#[CurrentUser] ?User   $user,
+                          Security               $security,
+                          AccessTokenRepository  $repo,
+                          EntityManagerInterface $em): Response
+   {
       if (null === $user)
       {
          return $this->json([

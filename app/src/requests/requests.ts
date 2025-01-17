@@ -3,7 +3,7 @@ import {getAuthorizationHeader, toRestUrl}        from './helpers';
 import {Transaction}                              from '../stores/CashPointEventStore/types';
 
 // @todo add logic to manage rest domain
-export const loginRequest = async(username: string, password: string): Promise<any> => {
+export const loginRequest = async(username: string, password: string): Promise<string> => {
    let resp: Response;
    try {
       resp = await fetch(toRestUrl('/login'), {
@@ -23,7 +23,7 @@ export const loginRequest = async(username: string, password: string): Promise<a
       throw new StatusError(resp.status, 'Login response status is not ok.');
    }
    try {
-      return await resp.json();
+      return await resp.text();
    } catch (e) {
       throw new ResponseError(resp, 'Login response is not json.', {
          cause: e,
@@ -45,6 +45,30 @@ export const logoutRequest = async(): Promise<void> => {
    }
    if (!resp.ok) {
       throw new StatusError(resp.status, 'Logout response status is not ok.');
+   }
+}
+
+export const userRequest = async(token: string | undefined = undefined): Promise<any> => {
+   let resp: Response;
+   try {
+      resp = await fetch(toRestUrl('/user'), {
+         headers: getAuthorizationHeader(token),
+      });
+
+   } catch (e) {
+      throw new RequestError('User request fails.', {
+         cause: e,
+      })
+   }
+   if (!resp.ok) {
+      throw new StatusError(resp.status, 'User response status is not ok.');
+   }
+   try {
+      return await resp.json();
+   } catch (e) {
+      throw new ResponseError(resp, 'User response is not json.', {
+         cause: e,
+      })
    }
 }
 

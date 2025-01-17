@@ -6,6 +6,7 @@ import AppRouterProvider   from './container/AppRouterProvider';
 import {ConfigProvider}    from 'antd';
 import {themeConfig}       from './themeConfig';
 import {RootStoreProvider} from './stores/RootStore';
+import Launcher            from './container/Launcher';
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 root.render(<React.StrictMode>
@@ -13,7 +14,9 @@ root.render(<React.StrictMode>
       <ConfigProvider
          theme={themeConfig}
       >
-         <AppRouterProvider/>
+         <Launcher>
+            <AppRouterProvider/>
+         </Launcher>
       </ConfigProvider>
    </RootStoreProvider>
 </React.StrictMode>);
