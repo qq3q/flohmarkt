@@ -8,40 +8,28 @@ import {
 }                                             from '@ant-design/icons';
 import {formatTimestamp}                      from '../../utils/formatTimestamp';
 
-const columns = [{
-   title:     'Erstellt',
-   dataIndex: 'createdAt',
-   key:       'createdAt',
-}, {
-   title:     'Betrag',
-   dataIndex: 'amount',
-   key:       'amount',
-}, {
-   title:     'Aktionen',
-   dataIndex: 'actions',
-   key:       'actions',
-}]
-
 const TransactionList = observer(() => {
    const {
       cashPointEventStore,
-      transactionStore
+      transactionStore,
+      unitsFormStore,
    } = useRootStore();
    const eventModel = cashPointEventStore.eventModel;
+   const unsaved = transactionStore.changed || unitsFormStore.changed;
 
    const data = useMemo(() => eventModel.transactionModels.map(t => {
       const selected = transactionStore.id === t.data.id;
-      const canSelect = !selected;
+      const canSelect = !selected && !unsaved;
 
       return {
          createdAt: t.data.createdAt,
          amount:    t.amount,
          selected,
-         canEdit:   canSelect,
-         edit:      canSelect ? () => transactionStore.open(t.data) : () => {
+         canSelect,
+         select: canSelect ? () => transactionStore.open(t.data) : () => {
          },
       }
-   }), [eventModel, transactionStore.id])
+   }), [eventModel, transactionStore.id, unsaved])
 
    return <>
       <Typography.Title level={5}>
@@ -64,7 +52,7 @@ const TransactionList = observer(() => {
                         overflow:  'hidden'
                      }}
                   >
-                     <Typography.Text disabled={!item.canEdit}>
+                     <Typography.Text disabled={!item.canSelect}>
                         {formatCurrency(item.amount)}
                      </Typography.Text>
                   </div>
@@ -75,16 +63,16 @@ const TransactionList = observer(() => {
                         overflow:  'hidden'
                      }}
                   >
-                     <Typography.Text disabled={!item.canEdit}>
+                     <Typography.Text disabled={!item.canSelect}>
                         {item.createdAt && formatTimestamp(item.createdAt)}
                      </Typography.Text>
                   </div>
                   <Button
-                     disabled={!item.canEdit}
+                     disabled={!item.canSelect}
                      type="text"
                      shape="circle"
                      icon={<EditFilled/>}
-                     onClick={item.edit}
+                     onClick={item.select}
                   />
                </Flex>
             </List.Item>
