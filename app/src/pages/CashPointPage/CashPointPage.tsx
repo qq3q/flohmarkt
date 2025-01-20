@@ -37,7 +37,7 @@ const CashPointPage = observer(() => {
                </>}
             </Layout.Content>
             <Layout.Sider
-               width="24em"
+               width="22em"
                style={{padding: '0 1em'}}
             >
                <TransactionList/>

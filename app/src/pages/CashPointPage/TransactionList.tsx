@@ -1,12 +1,10 @@
-import {observer}                             from 'mobx-react-lite';
-import {useMemo}                              from 'react';
-import {Button, Card, Flex, List, Typography} from 'antd';
-import {useRootStore}                         from '../../stores/RootStore';
-import {formatCurrency}                       from '../../utils/formatCurrency';
-import {
-   EditFilled,
-}                                             from '@ant-design/icons';
-import {formatTimestamp}                      from '../../utils/formatTimestamp';
+import {observer}                       from 'mobx-react-lite';
+import {useMemo}                        from 'react';
+import {Button, Flex, List, Typography} from 'antd';
+import {useRootStore}                   from '../../stores/RootStore';
+import {formatCurrency}                 from '../../utils/formatCurrency';
+import {ReloadOutlined,}                from '@ant-design/icons';
+import {formatTimestamp}                from '../../utils/formatTimestamp';
 
 const TransactionList = observer(() => {
    const {
@@ -26,21 +24,44 @@ const TransactionList = observer(() => {
          amount:    t.amount,
          selected,
          canSelect,
-         select: canSelect ? () => transactionStore.open(t.data) : () => {
+         select:    canSelect ? () => transactionStore.open(t.data) : () => {
          },
       }
    }), [eventModel, transactionStore.id, unsaved])
 
    return <>
-      <Typography.Title level={5}>
-         {'Transaktionen ' + cashPointEventStore.eventModel.data.title}
-      </Typography.Title>
+      <Flex
+         justify="space-between"
+         align="center"
+      >
+         <div>
+            <Typography.Text strong>
+               {cashPointEventStore.eventModel.data.title}
+            </Typography.Text>
+         </div>
+         <Button
+            disabled={unsaved}
+            type="text"
+            shape="circle"
+            icon={<ReloadOutlined/>}
+            onClick={async() => {
+               await cashPointEventStore.sync();
+               transactionStore.open();
+            }}
+         />
+      </Flex>
       <List
          size="small"
          bordered={false}
          dataSource={data}
          renderItem={item => {
-            return <List.Item>
+            return <List.Item
+               style={{
+                  background: item.selected ? '#e0e0e0' : '',
+                  cursor:     item.canSelect ? 'pointer' : 'not-allowed'
+               }}
+               onClick={item.select}
+            >
                <Flex
                   gap="small"
                   align="center"
@@ -67,13 +88,6 @@ const TransactionList = observer(() => {
                         {item.createdAt && formatTimestamp(item.createdAt)}
                      </Typography.Text>
                   </div>
-                  <Button
-                     disabled={!item.canSelect}
-                     type="text"
-                     shape="circle"
-                     icon={<EditFilled/>}
-                     onClick={item.select}
-                  />
                </Flex>
             </List.Item>
          }}
