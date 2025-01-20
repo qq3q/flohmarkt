@@ -123,10 +123,19 @@ export class UnitsFormsStore {
       const formDataArr = [...this.formDataArr];
       formDataArr[index] = formDataArr[index].clone();
       formDataArr[index].change(newFormValues);
+
+      if (formDataArr[index].blank) {
+         if (index < this.formDataArr.length - 1) {
+            formDataArr.splice(index, 1);
+            this._formDataArr = formDataArr;
+
+            return;
+         }
+      }
       this.validator.validate(formDataArr[index]);
-      if (index === this.formDataArr.length - 1 && formDataArr[index].valid) {
+      if (index === this.formDataArr.length - 1 && formDataArr[index].valid && !formDataArr[index].blank) {
           formDataArr.push(this.createBlankFormData());
-       }
+      }
       this._formDataArr = formDataArr;
    }
 
