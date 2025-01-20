@@ -6,7 +6,8 @@ import {RoutePath}    from '../../container/AppRouterProvider/types';
 export const usePageLauncher = () => {
    const {
       securityStore,
-      cashPointEventStore
+      cashPointEventStore,
+      transactionStore
    } = useRootStore();
    const navigate = useNavigate();
 
@@ -17,7 +18,12 @@ export const usePageLauncher = () => {
          return;
       }
       if (cashPointEventStore.status === 'not_synced') {
-         (() => cashPointEventStore.sync())();
+         (async () => {
+            await cashPointEventStore.sync();
+            transactionStore.open();
+         } )();
       }
+
+      return () => transactionStore.close();
    }, [navigate, cashPointEventStore, securityStore]);
 };

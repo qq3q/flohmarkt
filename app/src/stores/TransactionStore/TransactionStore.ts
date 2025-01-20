@@ -113,7 +113,7 @@ export class TransactionStore {
       return TransactionModel.createInstance(this.transaction).amount
    }
 
-   async open(transaction: Transaction | null = null): Promise<void> {
+   open(transaction: Transaction | null = null): void {
       if (transaction === null) {
          transaction = NEW_TRANSACTION;
       }

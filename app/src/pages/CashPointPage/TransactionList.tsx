@@ -1,7 +1,7 @@
 import {observer}               from 'mobx-react-lite';
 import {useMemo}             from 'react';
-import {Button, Flex, List}  from 'antd';
-import {useRootStore}           from '../../stores/RootStore';
+import {Button, Flex, List} from 'antd';
+import {useRootStore}       from '../../stores/RootStore';
 
 const columns = [{
    title    : 'Erstellt',

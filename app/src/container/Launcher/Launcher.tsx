@@ -5,7 +5,6 @@ import {useRootStore} from '../../stores/RootStore';
 const Launcher =  observer((props: {
    children: ReactNode;
 }) => {
-   console.log('abc, abc')
    const {securityStore} = useRootStore();
    useEffect(() => {
       if(securityStore.state === 'uninitialized') {
@@ -14,7 +13,6 @@ const Launcher =  observer((props: {
    }, [securityStore]);
 
    if(securityStore.state === 'initialized') {
-      console.log('init')
 
       return <>{props.children}</>;
    }
