@@ -5,7 +5,7 @@ const LogoutButton = (props: {
    [index: string]: any
 }) => {
 
-   return <Button {...props} title="Abmelden" type="primary" shape="circle" icon={<LogoutOutlined />} />
+   return <Button {...props} title="Abmelden" type="default" shape="circle" icon={<LogoutOutlined />} />
 }
 
 export default LogoutButton;

@@ -1,4 +1,5 @@
-import React             from 'react';
+import React         from 'react';
+import {Flex, Space} from 'antd';
 
 const ListItem = (props: {
    children: React.ReactNode,
@@ -7,13 +8,15 @@ const ListItem = (props: {
       children
    } = props;
 
-   return <li style={{
-      margin: 0,
-      padding: 0,
-      listStyle: 'none',
-   }}>
+   return <li
+      style={{
+         margin:    '0 0 0.5em 0',
+         padding:   0,
+         listStyle: 'none',
+      }}
+   >
       {children}
-      </li>
+   </li>
 }
 
 export default ListItem;

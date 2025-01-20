@@ -13,6 +13,7 @@ export const router = createBrowserRouter([{
       index  : true,
       element: <HomePage/>
    }, {
+      index  : true,
       path: RoutePath.CashPoint, // loader : cashPointLoader,
       element: <CashPointPage/>
    }]

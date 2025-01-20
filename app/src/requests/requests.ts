@@ -162,6 +162,23 @@ export const saveTransactionRequest = async (transaction: Transaction): Promise<
    }
 }
 
+export const deleteTransactionRequest = async (transactionId: number): Promise<void> => {
+   let resp: Response;
+   try {
+         resp = await fetch(toRestUrl(`/transaction/${transactionId}`), {
+            method: 'DELETE',
+            headers: getAuthorizationHeader(),
+         });
+   } catch (e) {
+      throw new RequestError('Delete transaction request fails.', {
+         cause: e,
+      })
+   }
+   if (!resp.ok) {
+      throw new StatusError(resp.status, 'Delete transaction response status is not ok.');
+   }
+}
+
 export const fetchUserQueuedUnitsRequest = async (): Promise<any> => {
    let resp: Response;
    try {

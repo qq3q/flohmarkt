@@ -1,52 +1,95 @@
-import {observer}               from 'mobx-react-lite';
-import {useMemo}             from 'react';
-import {Button, Flex, List} from 'antd';
-import {useRootStore}       from '../../stores/RootStore';
+import {observer}                             from 'mobx-react-lite';
+import {useMemo}                              from 'react';
+import {Button, Card, Flex, List, Typography} from 'antd';
+import {useRootStore}                         from '../../stores/RootStore';
+import {formatCurrency}                       from '../../utils/formatCurrency';
+import {
+   EditFilled,
+}                                             from '@ant-design/icons';
+import {formatTimestamp}                      from '../../utils/formatTimestamp';
 
 const columns = [{
-   title    : 'Erstellt',
+   title:     'Erstellt',
    dataIndex: 'createdAt',
-   key      : 'createdAt',
+   key:       'createdAt',
 }, {
-   title    : 'Betrag',
+   title:     'Betrag',
    dataIndex: 'amount',
-   key      : 'amount',
+   key:       'amount',
 }, {
-   title    : 'Aktionen',
+   title:     'Aktionen',
    dataIndex: 'actions',
-   key      : 'actions',
+   key:       'actions',
 }]
 
 const TransactionList = observer(() => {
-   const {cashPointEventStore, transactionStore} = useRootStore();
+   const {
+      cashPointEventStore,
+      transactionStore
+   } = useRootStore();
    const eventModel = cashPointEventStore.eventModel;
 
    const data = useMemo(() => eventModel.transactionModels.map(t => {
-      const canEdit = transactionStore.id !== t.data.id;
+      const selected = transactionStore.id === t.data.id;
+      const canSelect = !selected;
 
       return {
          createdAt: t.data.createdAt,
-         amount   : t.amount,
-         canEdit,
-         edit: canEdit ? () => transactionStore.open(t.data) : () => {},
+         amount:    t.amount,
+         selected,
+         canEdit:   canSelect,
+         edit:      canSelect ? () => transactionStore.open(t.data) : () => {
+         },
       }
    }), [eventModel, transactionStore.id])
 
-   return <List
-      dataSource={data}
-      renderItem={item => {
-         return <List.Item>
-            <Flex gap="small">
-               <Button type="text" disabled={!item.canEdit} onClick={item.edit} style={{width: '6em'}}>
-                  {item.amount}
-               </Button>
-               <Button type="text" disabled={!item.canEdit} onClick={item.edit}>
-                  {item.createdAt}
-               </Button>
-            </Flex>
-         </List.Item>
-      }}
-   />
+   return <>
+      <Typography.Title level={5}>
+         {'Transaktionen ' + cashPointEventStore.eventModel.data.title}
+      </Typography.Title>
+      <List
+         size="small"
+         bordered={false}
+         dataSource={data}
+         renderItem={item => {
+            return <List.Item>
+               <Flex
+                  gap="small"
+                  align="center"
+               >
+                  <div
+                     style={{
+                        width:     '6em',
+                        textAlign: 'right',
+                        overflow:  'hidden'
+                     }}
+                  >
+                     <Typography.Text disabled={!item.canEdit}>
+                        {formatCurrency(item.amount)}
+                     </Typography.Text>
+                  </div>
+                  <div
+                     style={{
+                        width:     '10em',
+                        textAlign: 'right',
+                        overflow:  'hidden'
+                     }}
+                  >
+                     <Typography.Text disabled={!item.canEdit}>
+                        {item.createdAt && formatTimestamp(item.createdAt)}
+                     </Typography.Text>
+                  </div>
+                  <Button
+                     disabled={!item.canEdit}
+                     type="text"
+                     shape="circle"
+                     icon={<EditFilled/>}
+                     onClick={item.edit}
+                  />
+               </Flex>
+            </List.Item>
+         }}
+      /></>
 
 })
 

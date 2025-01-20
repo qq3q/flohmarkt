@@ -76,7 +76,7 @@ class CashPointController extends AbstractController
       $em->flush();
 
       // @todo correct Status?
-      return new Response(null, Response::HTTP_OK);
+      return new Response(null, Response::HTTP_NO_CONTENT);
    }
 
    /**

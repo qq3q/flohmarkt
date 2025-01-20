@@ -1,5 +1,6 @@
-import Form from './Form2';
+import Form from './Form';
+import FormHead from './FormHead';
 import List from './List';
 import ListItem from './ListItem';
 
-export {Form, List, ListItem}
+export {Form, FormHead, List, ListItem}

@@ -1,34 +1,38 @@
-import {useRootStore} from '../../stores/RootStore';
-import React from 'react';
-import {observer}     from 'mobx-react-lite';
-import {usePageLauncher} from './usePageLauncher';
-import {Layout} from 'antd';
-import TransactionForm from './TransactionForm';
-import TransactionList from './TransactionList';
+import {useRootStore}                   from '../../stores/RootStore';
+import React                            from 'react';
+import {observer}                       from 'mobx-react-lite';
+import {usePageLauncher}                from './usePageLauncher';
+import {Card, Col, Layout, Result, Row} from 'antd';
+import TransactionForm                  from './TransactionForm';
+import TransactionList                  from './TransactionList';
+import {formatCurrency}                 from '../../utils/formatCurrency';
+import {HEADER_HEIGHT}                  from '../RootPage/constants';
 
 const CashPointPage = observer(() => {
    usePageLauncher();
    const {
       cashPointEventStore,
       transactionStore,
-      queuedUnitsStore,} = useRootStore();
+      unitsFormStore,
+      queuedUnitsStore,
+   } = useRootStore();
 
    switch (cashPointEventStore.status) {
       case 'syncing':
          return <>Loading...</>;
       case 'synced':
          return <Layout>
-            <Layout.Content>
+            <Layout.Content style={{background: '#fff', padding: '0.5em', minHeight: `calc(100vh - ${HEADER_HEIGHT})`}}>
                {queuedUnitsStore.lastFetchFailed &&
                   <p>Daten von externen Geräten (Scannern) konnte nicht geladen werden.</p>}
-               {transactionStore.opened && transactionStore.saving && <p>Loading</p>}
-               {transactionStore.opened && !transactionStore.saving && <>
+               {transactionStore.opened && transactionStore.syncing && <p>Loading</p>}
+               {transactionStore.opened && !transactionStore.syncing && <>
                   {transactionStore.lastSaveFailed && <p>Fehler beim Speichern</p>}
+                  {transactionStore.lastDeleteFailed && <p>Fehler beim Löschen</p>}
                   <TransactionForm/>
                </>}
             </Layout.Content>
-            <Layout.Sider>
-               Title: {cashPointEventStore.eventModel.data.title}
+            <Layout.Sider width="24em" style={{padding: '0 1em'}}>
                <TransactionList/>
             </Layout.Sider>
          </Layout>

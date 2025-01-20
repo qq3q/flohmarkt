@@ -1,8 +1,8 @@
 import {action, computed, makeAutoObservable, observable, runInAction} from 'mobx';
 import {PaymentType, Transaction, Unit}                                from '../CashPointEventStore/types';
-import {TransactionModel}                                              from '../../models/TransactionModel';
-import {saveTransactionRequest}                                        from '../../requests/requests';
-import {RootStore}                                                     from '../RootStore/RootStore';
+import {TransactionModel}                                 from '../../models/TransactionModel';
+import {deleteTransactionRequest, saveTransactionRequest} from '../../requests/requests';
+import {RootStore}                                        from '../RootStore/RootStore';
 
 const NEW_TRANSACTION: Transaction = {
    id         : null,
@@ -18,27 +18,32 @@ export class TransactionStore {
    // private _currInd: number | null = null;
    // @todo rename to _synced and inverse boolean logic => true to false
    private _changed: boolean = false;
-   private _saving = false;
+   private _syncing = false;
    private _lastSaveFailed = false;
+   private _lastDeleteFailed = false;
 
    constructor(public readonly rootStore: RootStore) {
-      makeAutoObservable<TransactionStore, '_originalTransaction' | '_paymentType' | '_units' | /*'_currInd' |*/ '_changed' | '_saving' | '_lastSaveFailed' | 'addUnits'>(this, {
+      makeAutoObservable<TransactionStore, '_originalTransaction' | '_paymentType' | '_units' | /*'_currInd' |*/ '_changed' | '_saving' | '_lastSaveFailed' | '_lastDeleteFailed' | 'addUnits'>(this, {
          _originalTransaction: observable,
          _paymentType        : observable,
-         _units              : observable, // _currInd            : observable,
-         _changed       : observable,
-         _saving        : observable,
-         _lastSaveFailed: observable,
-         paymentType    : computed,
-         opened         : computed,
-         id             : computed,
-         units          : computed, // currInd       : computed,
-         changed       : computed,
-         open          : action,
-         reset         : action,
-         close         : action,
-         setPaymentType: action,
-         addUnits      : action, // setCurrInd    : action,
+         _units              : observable,
+         _changed            : observable,
+         _saving             : observable,
+         _lastSaveFailed     : observable,
+         _lastDeleteFailed   : observable,
+         paymentType         : computed,
+         opened              : computed,
+         id                  : computed,
+         units               : computed,
+         changed             : computed,
+         syncing             : computed,
+         lastSaveFailed      : computed,
+         lastDeleteFailed    : computed,
+         open                : action,
+         reset               : action,
+         close               : action,
+         setPaymentType      : action,
+         addUnits            : action,
       });
    }
 
@@ -89,14 +94,19 @@ export class TransactionStore {
       return this._changed;
    }
 
-   get saving(): boolean {
+   get syncing(): boolean {
 
-      return this._saving;
+      return this._syncing;
    }
 
    get lastSaveFailed(): boolean {
 
       return this._lastSaveFailed;
+   }
+
+   get lastDeleteFailed(): boolean {
+
+      return this._lastDeleteFailed;
    }
 
    get transaction(): Transaction {
@@ -114,6 +124,7 @@ export class TransactionStore {
    }
 
    open(transaction: Transaction | null = null): void {
+      this.close();
       if (transaction === null) {
          transaction = NEW_TRANSACTION;
       }
@@ -121,20 +132,16 @@ export class TransactionStore {
       this._paymentType = transaction.paymentType;
       this._units = transaction.units.map(u => ({...u}))
       this.rootStore.unitsFormStore.open(this.units, this.rootStore.cashPointEventStore.sellerIds);
-      // this._currInd = null;
-      this._changed = false;
-      this._saving = false;
-      this._lastSaveFailed = false;
    }
 
    reset(): void {
       this._paymentType = this.originalTransaction.paymentType;
       this._units = this.originalTransaction.units.map(u => ({...u}))
       this.rootStore.unitsFormStore.open(this.units, this.rootStore.cashPointEventStore.sellerIds);
-      // this._currInd = null;
       this._changed = false;
-      this._saving = false;
+      this._syncing = false;
       this._lastSaveFailed = false;
+      this._lastDeleteFailed = false;
    }
 
    close(): void {
@@ -142,10 +149,10 @@ export class TransactionStore {
       this._paymentType = null;
       this._units = null;
       this.rootStore.unitsFormStore.close();
-      // this._currInd = null;
       this._changed = false;
-      this._saving = false;
+      this._syncing = false;
       this._lastSaveFailed = false;
+      this._lastDeleteFailed = false;
    }
 
    setPaymentType(paymentType: PaymentType): void {
@@ -164,12 +171,12 @@ export class TransactionStore {
    // }
 
    async save(): Promise<void> {
-      this._saving = false;
+      this._syncing = false;
       this._lastSaveFailed = false;
       try {
          const id = await saveTransactionRequest(this.transaction);
          runInAction(() => {
-            this._saving = false;
+            this._syncing = false;
             this._changed = false;
             this._originalTransaction = {
                ...this.originalTransaction,
@@ -180,8 +187,30 @@ export class TransactionStore {
          })
       } catch (e) {
          runInAction(() => {
-            this._saving = false;
+            this._syncing = false;
             this._lastSaveFailed = true;
+         })
+      }
+   }
+
+   async delete(): Promise<void> {
+      if(this.transaction.id === null) {
+
+         throw new Error('Transaction id is null');
+      }
+      this._syncing = false;
+      this._lastDeleteFailed = false;
+      try {
+         const id = await deleteTransactionRequest(this.transaction.id);
+         runInAction(() => {
+            this._syncing = false;
+            this._changed = false;
+            this.close();
+         })
+      } catch (e) {
+         runInAction(() => {
+            this._syncing = false;
+            this._lastDeleteFailed = true;
          })
       }
    }

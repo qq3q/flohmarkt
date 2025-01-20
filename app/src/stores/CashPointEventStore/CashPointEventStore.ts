@@ -11,12 +11,13 @@ export class CashPointEventStore {
 
    constructor(public readonly rootStore: RootStore) {
       makeObservable<CashPointEventStore, '_status' | '_event' | '_sellerIds'>(this, {
-         _status   : observable,
-         _event    : observable,
-         _sellerIds    : observable,
-         status    : computed,
+         _status:    observable,
+         _event:     observable,
+         _sellerIds: observable,
+         status:     computed,
          eventModel: computed,
-         sync      : action,
+         sync:       action,
+         reset:      action,
       })
    }
 
@@ -56,9 +57,9 @@ export class CashPointEventStore {
          let data: CashPointEvent;
          let sellerIds: number[];
          [data, sellerIds] = await Promise.all([
-                        await activeEventRequest(),
-                        await sellerIdsRequest()
-                     ])
+                                                  await activeEventRequest(),
+                                                  await sellerIdsRequest()
+                                               ])
          runInAction(() => {
             this._event = data;
             this._sellerIds = sellerIds;
@@ -69,5 +70,11 @@ export class CashPointEventStore {
             this._status = 'sync_failed';
          })
       }
+   }
+
+   reset() {
+      this._status = 'not_synced';
+      this._event = null;
+      this._sellerIds = null;
    }
 }
