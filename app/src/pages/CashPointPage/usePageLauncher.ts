@@ -25,6 +25,9 @@ export const usePageLauncher = () => {
          } )();
       }
 
-      return () => transactionStore.close();
+      return () => {
+         transactionStore.close();
+         cashPointEventStore.reset();
+      }
    }, [navigate, cashPointEventStore, securityStore]);
 };

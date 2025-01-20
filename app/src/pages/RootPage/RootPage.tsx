@@ -1,5 +1,5 @@
-import {Outlet, useNavigate} from 'react-router';
-import {observer}            from 'mobx-react-lite';
+import {NavLink, Outlet, useNavigate} from 'react-router';
+import {observer}                     from 'mobx-react-lite';
 import {RoutePath}           from '../../container/AppRouterProvider/types';
 import LogoutButton          from '../../components/LogoutButton';
 import Navigation            from '../../components/Navigation';
@@ -17,8 +17,6 @@ const RootPage = observer(() => {
    const onLogout = async() => {
       try {
          await securityStore.logout();
-         transactionStore.close();
-         cashPointEventStore.reset();
          navigate(RoutePath.Login);
       } catch (e) {
          // @todo error handling
@@ -30,11 +28,11 @@ const RootPage = observer(() => {
       <Header style={{height: HEADER_HEIGHT}}>
          <Flex
             justify="space-between"
-            align="middle"
+            align="center"
          >
             <Space>
                <Navigation items={navItems}/>
-               Floh 2.0
+               <NavLink to={RoutePath.Home}>Floh 2.0</NavLink>
             </Space>
             <Space>
                {securityStore.user}
