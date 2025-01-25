@@ -36,6 +36,7 @@ definitions:
         name: Rest Build
         script:
           - cd rest
+          - export COMPOSER_ALLOW_SUPERUSER=1
           - composer install
           - rm -f .env.local
           - touch .env.local
