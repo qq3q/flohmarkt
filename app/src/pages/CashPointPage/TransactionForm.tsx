@@ -10,31 +10,31 @@ import {
    Result,
    Row,
    Space
-}                         from 'antd';
+} from 'antd';
 import * as UnitUI
-                          from '../../components/Unit';
+   from '../../components/Unit';
 import {
    formatCurrency
-}                         from '../../utils/formatCurrency';
+} from '../../utils/formatCurrency';
 import {
    useRootStore
-}                         from '../../stores/RootStore';
+} from '../../stores/RootStore';
 import React, {useEffect} from 'react';
 import {
    PaymentType
-}                         from '../../stores/CashPointEventStore/types';
+} from '../../stores/CashPointEventStore/types';
 import {
    observer
-}                         from 'mobx-react-lite';
+} from 'mobx-react-lite';
 import {
    AddButton,
    AppButton,
    DeleteButton,
    ResetButton,
    SaveButton
-}                         from '../../components/buttons';
+} from '../../components/buttons';
 import DeleteConfirmButton
-                          from '../../components/DeleteConfirmButton/DeleteConfirmButton';
+   from '../../components/DeleteConfirmButton/DeleteConfirmButton';
 
 // @todo from backend
 const paymentTypeOptions: CheckboxOptionType<PaymentType>[] = [{
@@ -56,15 +56,19 @@ const TransactionForm = observer(() => {
       transactionStore.setPaymentType(ev.target.value);
    }
 
+   const showPrice = !unitsFormStore.changed && unitsFormStore.formDataArr.length > 1
+
    return <Row gutter={8}>
-      <Col xs={24} xl={16}>
+      <Col
+         xs={24}
+         xl={showPrice ? 16 : 24}
+      >
          <Card
             title="Zahlung"
             size="small"
             style={{marginBottom: '0.5em'}}
          >
             <Radio.Group
-               block
                options={paymentTypeOptions}
                value={transactionStore.paymentType}
                optionType="button"
@@ -122,16 +126,19 @@ const TransactionForm = observer(() => {
             </Space>
          </Card>
       </Col>
-      <Col xs={24} xl={8}>
-         {!unitsFormStore.changed && unitsFormStore.formDataArr.length > 1 &&
+      {showPrice &&
+         <Col
+            xs={24}
+            xl={8}
+         >
             <Card>
                <Result
                   status="success"
                   title={formatCurrency(transactionStore.amount)}
                />
             </Card>
-         }
-      </Col>
+         </Col>
+      }
    </Row>
 })
 
