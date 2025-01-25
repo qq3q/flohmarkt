@@ -19,7 +19,7 @@ class AppFixtures extends Fixture
    public function load(ObjectManager $manager): void
    {
       $user = new User();
-      $hashedPassword = $this->passwordHasher->hashPassword($user, 'qwertz');
+      $hashedPassword = $this->passwordHasher->hashPassword($user, 'tohph5Eesh2ieNec');
       $user
          ->setUsername('admin')
          ->setPassword($hashedPassword)
