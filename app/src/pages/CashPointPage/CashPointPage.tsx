@@ -45,7 +45,7 @@ const CashPointPage = observer(() => {
             </>}
          </AppLayout.Content>
          <AppLayout.Sider>
-            <TransactionList/>
+            {transactionStore.opened && !transactionStore.syncing && <TransactionList/>}
          </AppLayout.Sider>
       </AppLayout.Layout>
    }
