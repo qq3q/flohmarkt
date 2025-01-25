@@ -8,6 +8,30 @@ definitions:
           - rest/composer.lock
       path: rest/vendor
   steps:
+    - step: &app_build
+        name: App Build
+        script:
+          - cd app
+          - npm install
+          - rm -f .env.local
+          - touch .env.local
+          - echo "REACT_APP_REST_URL=$REST_URL" >> .env.local
+          - npm run build
+        caches:
+          - node
+        artifacts:
+          - app/build/**
+    - step: &app_deploy
+        name: App Deploy
+        script:
+          - cd app
+          #- rm -rf rest/var
+          - tar -czf /tmp/build.tar.gz .
+          - scp /tmp/build.tar.gz $USER@$SERVER:/tmp/
+          - ssh $USER@$SERVER "mkdir -p /app/floh2-app"
+          - ssh $USER@$SERVER "cd /app/floh2-app && tar -xzf /tmp/build.tar.gz && rm /tmp/build.tar.gz"
+          - ssh $USER@$SERVER chown -R www-data:www-data /app/floh2-app/build
+          - ssh $USER@$SERVER "rm -rf /app/floh2-app/last && mv /app/floh2-app/current /app/floh2-app/last && mv /app/floh2-app/build /app/floh2-app/current"
     - step: &rest_build
         name: Rest Build
         script:
@@ -40,11 +64,13 @@ definitions:
 
 pipelines:
   custom:
-    rest:
+    app_and_rest:
       - stage:
-          name: Deploy rest
+          name: Deploy app and rest
           deployment: Production
           steps:
             - step: *rest_build
             - step: *rest_deploy
             - step: *rest_migrate
+            - step: *app_build
+            - step: *app_deploy
