@@ -171,7 +171,7 @@ export class TransactionStore {
    // }
 
    async save(): Promise<void> {
-      this._syncing = false;
+      this._syncing = true;
       this._lastSaveFailed = false;
       try {
          const id = await saveTransactionRequest(this.transaction);

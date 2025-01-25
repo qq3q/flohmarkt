@@ -5,10 +5,9 @@ import LogoutButton          from '../../components/LogoutButton';
 import Navigation            from '../../components/Navigation';
 import React                 from 'react';
 import {useNavigationItems}  from '../../hooks/useNavigationItems';
-import {Flex, Layout, Space} from 'antd';
-import {Content, Header}     from 'antd/es/layout/layout';
+import {Flex, Space} from 'antd';
 import {useRootStore}        from '../../stores/RootStore';
-import {HEADER_HEIGHT}       from './constants';
+import * as AppLayout from '../../components/AppLayout'
 
 const RootPage = observer(() => {
    const {securityStore, cashPointEventStore, transactionStore} = useRootStore();
@@ -19,13 +18,12 @@ const RootPage = observer(() => {
          await securityStore.logout();
          navigate(RoutePath.Login);
       } catch (e) {
-         // @todo error handling
-         console.error(e);
+         console.warn(e);
       }
    }
 
-   return <Layout style={{minHeight: '100vh', minWidth: '800px'}}>
-      <Header style={{height: HEADER_HEIGHT}}>
+   return <AppLayout.PageLayout>
+      <AppLayout.PageHeader>
          <Flex
             justify="space-between"
             align="center"
@@ -41,11 +39,11 @@ const RootPage = observer(() => {
                />
             </Space>
          </Flex>
-      </Header>
-      <Content>
+      </AppLayout.PageHeader>
+      <AppLayout.PageContent>
          <Outlet/>
-      </Content>
-   </Layout>
+      </AppLayout.PageContent>
+   </AppLayout.PageLayout>
 })
 
 export default RootPage;

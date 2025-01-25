@@ -4,6 +4,7 @@ import React, {useEffect} from 'react';
 import {RoutePath}        from '../../container/AppRouterProvider/types';
 import {observer}     from 'mobx-react-lite';
 import Content from './Content';
+import * as AppLayout from '../../components/AppLayout';
 
 const HomePage = observer(() => {
    const {
@@ -19,7 +20,11 @@ const HomePage = observer(() => {
       }
    }, [navigate, securityStore]);
 
-   return <Content/>
+   return <AppLayout.Layout>
+      <AppLayout.Content>
+         <Content/>
+      </AppLayout.Content>
+   </AppLayout.Layout>
 });
 
 export default HomePage;

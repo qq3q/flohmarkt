@@ -1,11 +1,11 @@
-import {useRootStore} from '../../stores/RootStore';
-import React from 'react';
-import {observer} from 'mobx-react-lite';
+import {useRootStore}    from '../../stores/RootStore';
+import React             from 'react';
+import {observer}        from 'mobx-react-lite';
 import {usePageLauncher} from './usePageLauncher';
-import {Layout,} from 'antd';
-import TransactionForm from './TransactionForm';
-import TransactionList from './TransactionList';
-import {HEADER_HEIGHT} from '../RootPage/constants';
+import TransactionForm   from './TransactionForm';
+import TransactionList   from './TransactionList';
+import * as AppLayout from '../../components/AppLayout';
+import * as Alert  from '../../components/alerts';
 
 const CashPointPage = observer(() => {
    usePageLauncher();
@@ -15,39 +15,47 @@ const CashPointPage = observer(() => {
       queuedUnitsStore,
    } = useRootStore();
 
-   switch (cashPointEventStore.status) {
-      case 'syncing':
-         return <>Loading...</>;
-      case 'synced':
-         return <Layout>
-            <Layout.Content
-               style={{
-                  background: '#fff',
-                  padding:    '0.5em',
-                  minHeight:  `calc(100vh - ${HEADER_HEIGHT})`
-               }}
-            >
-               {queuedUnitsStore.lastFetchFailed &&
-                  <p>Daten von externen Geräten (Scannern) konnte nicht geladen werden.</p>}
-               {transactionStore.opened && transactionStore.syncing && <p>Loading</p>}
-               {transactionStore.opened && !transactionStore.syncing && <>
-                  {transactionStore.lastSaveFailed && <p>Fehler beim Speichern</p>}
-                  {transactionStore.lastDeleteFailed && <p>Fehler beim Löschen</p>}
-                  <TransactionForm/>
-               </>}
-            </Layout.Content>
-            <Layout.Sider
-               width="22em"
-               style={{padding: '0 1em'}}
-            >
-               <TransactionList/>
-            </Layout.Sider>
-         </Layout>
+   if (cashPointEventStore.status === 'syncing'
+      || cashPointEventStore.status === 'not_synced'
+      || transactionStore.syncing) {
+
+      return <AppLayout.Layout>
+         <AppLayout.Content>
+            <AppLayout.ContentLoading/>
+         </AppLayout.Content>
+      </AppLayout.Layout>
    }
 
-   return <>
-      <div>CashPoint Page</div>
-   </>
+   if (cashPointEventStore.status === 'synced') {
+
+      return <AppLayout.Layout>
+         <AppLayout.Content>
+            {transactionStore.opened && !transactionStore.syncing && <>
+               {queuedUnitsStore.lastFetchFailed &&
+                  <Alert.Warning
+                     description="Daten von externen Geräten (Scannern) konnte nicht geladen werden."
+                  />}
+               {transactionStore.lastSaveFailed && <Alert.Error
+                  description="Die Transaktion konnte nicht gespeichert werden."
+               />}
+               {transactionStore.lastDeleteFailed && <Alert.Error
+                  description="Die Transaktion konnte nicht gelöscht werden."
+               />}
+               <TransactionForm/>
+            </>}
+         </AppLayout.Content>
+         <AppLayout.Sider>
+            <TransactionList/>
+         </AppLayout.Sider>
+      </AppLayout.Layout>
+   }
+
+   // cashPointEventStore.status === 'sync_failed'
+   return <AppLayout.Layout>
+      <AppLayout.Content>
+         <Alert.Error description="Die Veranstaltung konnte nicht geladen werden."/>
+      </AppLayout.Content>
+   </AppLayout.Layout>
 });
 
 export default CashPointPage;
