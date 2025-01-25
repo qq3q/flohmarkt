@@ -201,7 +201,7 @@ export class TransactionStore {
       this._syncing = false;
       this._lastDeleteFailed = false;
       try {
-         const id = await deleteTransactionRequest(this.transaction.id);
+         await deleteTransactionRequest(this.transaction.id);
          runInAction(() => {
             this._syncing = false;
             this._changed = false;

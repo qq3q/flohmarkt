@@ -1,10 +1,7 @@
 import {
-   Button,
    Card,
-   Checkbox,
    CheckboxOptionType,
    Col,
-   Layout,
    Radio,
    RadioChangeEvent,
    Result,
@@ -19,7 +16,7 @@ import {
 import {
    useRootStore
 } from '../../stores/RootStore';
-import React, {useEffect} from 'react';
+import React from 'react';
 import {
    PaymentType
 } from '../../stores/CashPointEventStore/types';
@@ -28,8 +25,6 @@ import {
 } from 'mobx-react-lite';
 import {
    AddButton,
-   AppButton,
-   DeleteButton,
    ResetButton,
    SaveButton
 } from '../../components/buttons';

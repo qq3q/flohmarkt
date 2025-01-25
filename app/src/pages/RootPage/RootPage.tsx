@@ -10,7 +10,7 @@ import {useRootStore}        from '../../stores/RootStore';
 import * as AppLayout from '../../components/AppLayout'
 
 const RootPage = observer(() => {
-   const {securityStore, cashPointEventStore, transactionStore} = useRootStore();
+   const {securityStore} = useRootStore();
    const navigate = useNavigate();
    const navItems = useNavigationItems();
    const onLogout = async() => {
