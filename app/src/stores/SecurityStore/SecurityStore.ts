@@ -54,13 +54,17 @@ export class SecurityStore {
       const token = localStorage.getItem('_token') ?? '';
       if (token.length > 0) {
          this._state = 'initializing';
-         // @todo do some validation
-         const user = await userRequest(token);
-         runInAction(() => {
-            this._user = user.name;
-            this._roles = user.roles;
-            this._token = token;
-         });
+         try {
+            const user = await userRequest(token);
+            runInAction(() => {
+               this._user = user.name;
+               this._roles = user.roles;
+               this._token = token;
+            });
+         }
+         catch (e) {
+            console.warn('Could not initialize security store');
+         }
       }
       this._state = 'initialized';
    }
