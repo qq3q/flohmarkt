@@ -17,7 +17,6 @@ export const usePageLauncher = () => {
 
          return;
       }
-      console.log('usePageLauncher', cashPointEventStore.status);
       if (cashPointEventStore.status === 'not_synced') {
          (async () => {
             await cashPointEventStore.sync();
@@ -31,5 +30,5 @@ export const usePageLauncher = () => {
          transactionStore.close();
          cashPointEventStore.reset();
       }
-   }, [navigate, cashPointEventStore, securityStore]);
+   }, [navigate, cashPointEventStore, securityStore, transactionStore]);
 };

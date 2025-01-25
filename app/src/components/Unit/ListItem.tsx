@@ -1,5 +1,4 @@
-import React         from 'react';
-import {Flex, Space} from 'antd';
+import React from 'react';
 
 const ListItem = (props: {
    children: React.ReactNode,
