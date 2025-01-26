@@ -13,9 +13,9 @@ import requests
 """
 
 # <Settings
-host = "https://floh2.qq5q.de"
+host = "https://floh2-rest.qq5q.de"
 endpoint = "/queued-unit"
-token =  "test_device_token"
+token =  "ohshee9Hei8Is6ei"
 # Settings>
 
 url = f"{host}{endpoint}"
