@@ -24,7 +24,7 @@ class AppFixtures extends Fixture
          ->setUsername('admin')
          ->setPassword($hashedPassword)
          ->setRoles(['ROLE_ADMIN'])
-         ->setDeviceToken('test_device_token');
+         ->setDeviceToken('ohshee9Hei8Is6ei');
       $manager->persist($user);
 
       $event = new Event();
