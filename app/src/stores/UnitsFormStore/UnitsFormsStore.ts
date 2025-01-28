@@ -142,7 +142,12 @@ export class UnitsFormsStore {
    addQueuedUnits = (units: QueuedUnit[]) => {
       const formDataArr = this.formDataArr.filter(formData => !formData.blank);
       units.forEach(unit => {
-         formDataArr.push(UnitFormData.createFromQueuedUnit(unit));
+         const formData = UnitFormData.createFromQueuedUnit(unit);
+         formDataArr.push(formData);
+         this.validator.validate(formData);
+         formData.touch('sellerId');
+         formData.touch('beforePointAmount');
+         formData.touch('afterPointAmount');
       });
       formDataArr.push(this.createBlankFormData());
       this._formDataArr = formDataArr;
