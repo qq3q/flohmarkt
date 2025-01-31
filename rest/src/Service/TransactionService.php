@@ -5,26 +5,34 @@ namespace App\Service;
 use App\Entity\Transaction;
 use App\Entity\Unit;
 use App\Enum\PaymentType;
+use App\Exception\InvalidDataException;
 use App\Repository\EventRepository;
 use App\Repository\SellerRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use DomainException;
+use stdClass;
+use UnexpectedValueException;
 
-class TransactionService
+readonly class TransactionService
 {
    public function __construct(
-      private readonly EntityManagerInterface $em,
-      private readonly EventRepository $eventRepo,
-      private readonly SellerRepository $sellerRepo,
+      private EntityManagerInterface $em,
+      private EventRepository        $eventRepo,
+      private SellerRepository       $sellerRepo,
    )
    {
    }
 
-   // @todo use data class
-   public function add(mixed $data): Transaction {
+   /**
+    * @throws InvalidDataException
+    * @throws UnexpectedValueException
+    */
+   public function add(mixed $data): Transaction
+   {
       $event = $this->eventRepo->findActiveEvent();
-      if($event === null) {
-         // @todo
-         throw new \Exception('No active event');
+      if ($event === null)
+      {
+         throw new UnexpectedValueException('No active event');
       }
       $transaction = new Transaction();
       $event->addTransaction($transaction);
@@ -35,18 +43,30 @@ class TransactionService
       return $transaction;
    }
 
-   // @todo use data class
-   public function update(Transaction $transaction, mixed $data): void {
+   /**
+    * @throws InvalidDataException
+    */
+   public function update(Transaction $transaction, mixed $data): void
+   {
       $this->setData($transaction, $data);
       $this->em->persist($transaction);
       $this->em->flush();
    }
 
+   /**
+    * @throws InvalidDataException
+    */
    private function setData(Transaction $transaction, mixed $data): void
    {
-      $transaction->setPaymentType(PaymentType::toEnum($data->paymentType));
+      try {
+         $transaction->setPaymentType(PaymentType::toEnum($data->paymentType));
+      }
+      catch (DomainException $e) {
+
+         throw new InvalidDataException('Invalid payment type.');
+      }
       $transaction->removeUnits();
-      /** @var \stdClass $unitData */
+      /** @var stdClass $unitData */
       foreach ($data->units as $unitData)
       {
          $unit = new Unit();
@@ -54,12 +74,11 @@ class TransactionService
          $seller = $this->sellerRepo->find($unitData->sellerId);
          if ($seller === null)
          {
-            // @todo
-            throw new \Exception('Seller not found');
+            throw new InvalidDataException('Seller not found.');
          }
          if (!$seller->isActive())
          {
-            throw new \Exception('Seller is not active');
+            throw new InvalidDataException('Seller is not active.');
          }
          $unit->setSeller($seller);
          $transaction->addUnit($unit);
