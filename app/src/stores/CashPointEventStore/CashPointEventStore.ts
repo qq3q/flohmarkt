@@ -52,8 +52,6 @@ export class CashPointEventStore {
    async sync() {
       this._status = 'syncing';
       try {
-         // const data: CashPointEvent = await activeEventRequest();
-         // const sellerIds: number[] = await sellerIdsRequest();
          let data: CashPointEvent;
          let sellerIds: number[];
          [data, sellerIds] = await Promise.all([

@@ -9,18 +9,18 @@ export class SecurityStore {
    private _token: string | null = null;
    private _roles: string[] = [];
 
-   constructor(public readonly rootStore: RootStore) {
+   constructor(public readonly _: RootStore) {
       makeObservable<SecurityStore, '_state' | '_user' | '_token' | '_roles'>(this, {
-         _state  : observable,
-         _user   : observable,
-         _token  : observable,
-         _roles  : observable,
-         user    : computed,
-         token   : computed,
+         _state:   observable,
+         _user:    observable,
+         _token:   observable,
+         _roles:   observable,
+         user:     computed,
+         token:    computed,
          loggedIn: computed,
-         login   : action,
-         refresh : action,
-         logout  : action,
+         login:    action,
+         // refresh : action,
+         logout: action,
       })
    }
 
@@ -45,7 +45,6 @@ export class SecurityStore {
    }
 
    get loggedIn(): boolean {
-      console.log('loggedin', this._user !== null);
 
       return this._user !== null;
    }
@@ -61,31 +60,26 @@ export class SecurityStore {
                this._roles = user.roles;
                this._token = token;
             });
-         }
-         catch (e) {
+         } catch (e) {
             console.warn('Could not initialize security store');
          }
       }
       this._state = 'initialized';
    }
 
-   refresh(): Promise<void> | void {
-      // check per request whether user is logged in
-      // if not clear username and token
-   }
+   // refresh(): Promise<void> | void {
+   //    // check per request whether user is logged in
+   //    // if not clear username and token
+   // }
 
    async login(username: string, password: string): Promise<void> {
-      // @todo error handling
       const token: string = await loginRequest(username, password);
       const user = await userRequest(token);
-      // @todo do some validation
       runInAction(() => {
          this.setToken(token);
          this._user = user.name;
          this._roles = user.roles;
       });
-
-      console.log('loggend in', this._user, this._token, this._roles);
    }
 
    async logout(): Promise<void> {

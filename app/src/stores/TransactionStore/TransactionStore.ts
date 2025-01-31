@@ -2,7 +2,7 @@ import {action, computed, makeAutoObservable, observable, runInAction} from 'mob
 import {PaymentType, Transaction, Unit}                                from '../CashPointEventStore/types';
 import {TransactionModel}                                 from '../../models/TransactionModel';
 import {deleteTransactionRequest, saveTransactionRequest} from '../../requests/requests';
-import {RootStore}                                        from '../RootStore/RootStore';
+import {type RootStore}                                        from '../RootStore/RootStore';
 
 const NEW_TRANSACTION: Transaction = {
    id         : null,
@@ -15,15 +15,13 @@ export class TransactionStore {
    private _originalTransaction: Transaction | null = null;
    private _paymentType: PaymentType | null = null;
    private _units: Unit[] | null = null;
-   // private _currInd: number | null = null;
-   // @todo rename to _synced and inverse boolean logic => true to false
    private _changed: boolean = false;
    private _syncing = false;
    private _lastSaveFailed = false;
    private _lastDeleteFailed = false;
 
    constructor(public readonly rootStore: RootStore) {
-      makeAutoObservable<TransactionStore, '_originalTransaction' | '_paymentType' | '_units' | /*'_currInd' |*/ '_changed' | '_saving' | '_lastSaveFailed' | '_lastDeleteFailed' | 'addUnits'>(this, {
+      makeAutoObservable<TransactionStore, '_originalTransaction' | '_paymentType' | '_units' | '_changed' | '_saving' | '_lastSaveFailed' | '_lastDeleteFailed' | 'addUnits'>(this, {
          _originalTransaction: observable,
          _paymentType        : observable,
          _units              : observable,
@@ -83,11 +81,6 @@ export class TransactionStore {
 
       return this._units;
    }
-
-   // get currInd(): number | null {
-   //
-   //    return this._currInd;
-   // }
 
    get changed(): boolean {
 
@@ -165,10 +158,6 @@ export class TransactionStore {
       this._changed = true;
       this.rootStore.unitsFormStore.open(this.units, this.rootStore.cashPointEventStore.sellerIds);
    }
-
-   // setCurrInd(currInd: number | null): void {
-   //    this._currInd = currInd;
-   // }
 
    async save(): Promise<void> {
       this._syncing = true;

@@ -115,8 +115,8 @@ export class UnitsFormsStore {
    close(): void {
       this.rootStore.queuedUnitsStore.unsubscribe();
       this._validator = null;
-      this._initialFormDataArr = [];
-      this._formDataArr = [];
+      this._initialFormDataArr = null;
+      this._formDataArr = null;
    }
 
    change(index: number, newFormValues: Partial<FormValues>): void {
