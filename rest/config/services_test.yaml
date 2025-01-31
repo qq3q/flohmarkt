@@ -1,0 +1,6 @@
+# config/services_test.yaml
+services:
+  App\Service\AddQueuedUnitService:
+    public: true
+    arguments:
+      $em: '@doctrine.orm.entity_manager'
