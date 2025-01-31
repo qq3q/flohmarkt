@@ -1,5 +1,5 @@
 import {Dropdown, MenuProps} from 'antd';
-import HamburgerButton                      from '../HamburgerButton';
+import HamburgerButton       from './HamburgerButton';
 
 const Navigation = (props: {
    items: MenuProps['items'],
@@ -10,7 +10,7 @@ const Navigation = (props: {
       menu={{items}}
       trigger={['click']}
    >
-      <HamburgerButton />
+      <HamburgerButton/>
    </Dropdown>
 }
 

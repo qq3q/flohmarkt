@@ -4,8 +4,8 @@ import {observer}        from 'mobx-react-lite';
 import {usePageLauncher} from './usePageLauncher';
 import TransactionForm   from './TransactionForm';
 import TransactionList   from './TransactionList';
-import * as AppLayout from '../../components/AppLayout';
-import * as Alert  from '../../components/alerts';
+import * as AppLayout    from '../../components/AppLayout';
+import * as Alert        from '../../components/alerts';
 
 const CashPointPage = observer(() => {
    usePageLauncher();

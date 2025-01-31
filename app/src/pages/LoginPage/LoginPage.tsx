@@ -1,9 +1,9 @@
-import React     from 'react';
-import LoginForm from '../../components/LoginForm';
-import {observer}    from 'mobx-react-lite';
-import {Alert, Flex} from 'antd';
-import {useNavigate} from 'react-router';
-import {RoutePath} from '../../container/AppRouterProvider/types';
+import React          from 'react';
+import LoginForm      from '../../components/LoginForm';
+import {observer}     from 'mobx-react-lite';
+import {Alert, Flex}  from 'antd';
+import {useNavigate}  from 'react-router';
+import {RoutePath}    from '../../container/AppRouterProvider/types';
 import {useRootStore} from '../../stores/RootStore';
 
 const LoginPage = observer(() => {
@@ -11,7 +11,7 @@ const LoginPage = observer(() => {
    const [failed, setFailed] = React.useState(false);
    const navigate = useNavigate();
 
-   const loginHandler = async (username: string, password: string) => {
+   const loginHandler = async(username: string, password: string) => {
 
       try {
          await securityStore.login(username, password);
@@ -21,11 +21,19 @@ const LoginPage = observer(() => {
       }
    }
 
-   return <Flex vertical justify="center" align="center" style={{height: '100vh'}}>
+   return <Flex
+      vertical
+      justify="center"
+      align="center"
+      style={{height: '100vh'}}
+   >
       <LoginForm
          login={loginHandler}
       />
-      {failed && <Alert message="Nutzername oder Passwort sind nicht korrekt. Bitte erneut propieren!" type="error" />}
+      {failed && <Alert
+         message="Nutzername oder Passwort sind nicht korrekt. Bitte erneut propieren!"
+         type="error"
+      />}
    </Flex>
 });
 
