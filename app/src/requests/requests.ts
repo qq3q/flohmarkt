@@ -2,7 +2,6 @@ import {RequestError, StatusError, ResponseError} from './errors';
 import {getAuthorizationHeader, toRestUrl}        from './helpers';
 import {Transaction}                              from '../stores/CashPointEventStore/types';
 
-// @todo add logic to manage rest domain
 export const loginRequest = async(username: string, password: string): Promise<string> => {
    let resp: Response;
    try {
