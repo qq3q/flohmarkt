@@ -1,10 +1,14 @@
+import React                                     from 'react';
 import {Flex}                                    from 'antd';
 import {AMOUNT_BEFORE_ID_WIDTH, SELLER_ID_WIDTH} from './constants';
 import {Typography}                              from 'antd';
 
 const FormHead = () => {
 
-   return <Flex gap="middle" style={{marginBottom: '0.5em'}}>
+   return <Flex
+      gap="middle"
+      style={{marginBottom: '0.5em'}}
+   >
       <label
          style={{
             width: SELLER_ID_WIDTH,

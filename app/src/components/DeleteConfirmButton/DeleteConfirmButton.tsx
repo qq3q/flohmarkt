@@ -1,8 +1,10 @@
+import React             from 'react';
 import {Checkbox, Space} from 'antd';
 import {DeleteButton}    from '../buttons';
-import {useState}     from 'react';
+import {useState}        from 'react';
+import {ButtonProps}     from 'antd/es/button/button';
 
-const DeleteConfirmButton = (props: any) => {
+const DeleteConfirmButton = (props: ButtonProps) => {
    const [confirmed, setConfirmed] = useState<boolean>(false);
 
    return <Space>

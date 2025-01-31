@@ -53,7 +53,7 @@ export class QueuedUnitsStore {
                })
                this._queue = this._queue.concat(units);
                this.notify();
-            } catch (e) {
+            } catch (_) {
                // console.warn('Could not fetch queued units.')
                // console.warn(e);
                runInAction(() => {
@@ -65,7 +65,7 @@ export class QueuedUnitsStore {
          })
       }
 
-      // @ts-ignore
+      // @ts-expect-error
       this._interval = setInterval(fetchQueue, INTERVAL);
 
       (() => {

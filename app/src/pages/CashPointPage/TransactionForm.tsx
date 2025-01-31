@@ -79,8 +79,7 @@ const TransactionForm = observer(() => {
                <UnitUI.ListItem>
                   <UnitUI.FormHead/>
                </UnitUI.ListItem>
-               {unitsFormStore.formDataArr.map((formData, i) => <UnitUI.ListItem><UnitUI.Form
-                  key={i}
+               {unitsFormStore.formDataArr.map((formData, i) => <UnitUI.ListItem key={i}><UnitUI.Form
                   autoFocus={unitsFormStore.formDataArr.length === 1}
                   formData={formData}
                   onChange={(newFormValues) => {

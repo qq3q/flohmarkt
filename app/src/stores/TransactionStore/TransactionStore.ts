@@ -174,7 +174,7 @@ export class TransactionStore {
                paymentType: this.paymentType,
             }
          })
-      } catch (e) {
+      } catch (_) {
          runInAction(() => {
             this._syncing = false;
             this._lastSaveFailed = true;

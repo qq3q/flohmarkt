@@ -1,12 +1,8 @@
-import React                                  from 'react';
-import {Flex, Layout as AntdLayout, Skeleton} from 'antd';
-import {HEADER_HEIGHT}                        from './constants';
+import React                                                           from 'react';
+import {Flex, Layout as AntdLayout, LayoutProps, SiderProps, Skeleton} from 'antd';
+import {HEADER_HEIGHT}                                                 from './constants';
 
-export const PageLayout = (props: {
-   children: React.ReactNode;
-
-   [index: string]: any;
-}) => {
+export const PageLayout = (props: LayoutProps) => {
    const {children, ...rest} = props;
 
    return <AntdLayout
@@ -17,11 +13,7 @@ export const PageLayout = (props: {
    </AntdLayout>;
 }
 
-export const PageHeader = (props: {
-   children: React.ReactNode;
-
-   [index: string]: any;
-}) => {
+export const PageHeader = (props: LayoutProps) => {
    const {children, ...rest} = props;
 
    return <AntdLayout.Header
@@ -32,11 +24,7 @@ export const PageHeader = (props: {
    </AntdLayout.Header>
 }
 
-export const PageContent = (props: {
-   children: React.ReactNode;
-
-   [index: string]: any;
-}) => {
+export const PageContent = (props: LayoutProps) => {
    const {children, ...rest} = props;
 
    return <AntdLayout.Content
@@ -46,21 +34,13 @@ export const PageContent = (props: {
    </AntdLayout.Content>;
 }
 
-export const Layout = (props: {
-   children: React.ReactNode;
-
-   [index: string]: any;
-}) => {
+export const Layout = (props: LayoutProps) => {
    const {children, ...rest} = props;
 
    return <AntdLayout {...rest}>{children}</AntdLayout>;
 }
 
-export const Content = (props: {
-   children: React.ReactNode;
-
-   [index: string]: any;
-}) => {
+export const Content = (props: LayoutProps) => {
    const {children, ...rest} = props;
 
    return <AntdLayout.Content
@@ -82,11 +62,7 @@ export const ContentLoading = () => {
    </Flex>
 }
 
-export const Sider = (props: {
-   children: React.ReactNode;
-
-   [index: string]: any;
-}) => {
+export const Sider = (props: SiderProps) => {
    const {children, ...rest} = props;
 
    return <AntdLayout.Sider

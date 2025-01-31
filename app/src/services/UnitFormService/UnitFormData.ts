@@ -55,8 +55,8 @@ export class UnitFormData {
 
    get parsedValues(): ParsedValues {
       const sellerId = this.formValues.sellerId.length === 0 ? null : Number(this.formValues.sellerId);
-      let beforePointAmount = this.formValues.beforePointAmount.length === 0 ? null : Number(this.formValues.beforePointAmount);
-      let afterPointAmount = this.formValues.afterPointAmount.length === 0 ? null : Number(this.formValues.afterPointAmount) / (10 ** this.formValues.afterPointAmount.length);
+      const beforePointAmount = this.formValues.beforePointAmount.length === 0 ? null : Number(this.formValues.beforePointAmount);
+      const afterPointAmount = this.formValues.afterPointAmount.length === 0 ? null : Number(this.formValues.afterPointAmount) / (10 ** this.formValues.afterPointAmount.length);
       let amount: number | null = null;
       if (beforePointAmount !== null || afterPointAmount !== null) {
          amount = 0;

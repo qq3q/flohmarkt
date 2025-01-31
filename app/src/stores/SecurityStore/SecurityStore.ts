@@ -60,7 +60,7 @@ export class SecurityStore {
                this._roles = user.roles;
                this._token = token;
             });
-         } catch (e) {
+         } catch (_) {
             console.warn('Could not initialize security store');
          }
       }

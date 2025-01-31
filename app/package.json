@@ -22,6 +22,7 @@
   },
   "devDependencies": {
     "@chromatic-com/storybook": "^3.2.2",
+    "@eslint/js": "^9.19.0",
     "@storybook/addon-essentials": "^8.4.5",
     "@storybook/addon-interactions": "^8.4.5",
     "@storybook/addon-onboarding": "^8.4.5",
@@ -31,14 +32,19 @@
     "@storybook/react-webpack5": "^8.4.5",
     "@storybook/test": "^8.4.5",
     "env-cmd": "^10.1.0",
+    "eslint": "^8.57.1",
+    "eslint-plugin-react": "^7.37.4",
     "eslint-plugin-storybook": "^0.11.1",
+    "globals": "^15.14.0",
     "prop-types": "^15.8.1",
     "storybook": "^8.4.5",
+    "typescript-eslint": "^8.22.0",
     "webpack": "^5.96.1"
   },
   "scripts": {
     "start": "env-cmd -f .env env-cmd -f .env.local react-scripts start",
     "build": "env-cmd -f .env env-cmd -f .env.local react-scripts build",
+    "lint": "npx eslint srca",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "storybook": "storybook dev -p 6006",

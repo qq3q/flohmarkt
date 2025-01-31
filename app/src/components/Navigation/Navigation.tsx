@@ -1,3 +1,4 @@
+import React                 from 'react';
 import {Dropdown, MenuProps} from 'antd';
 import HamburgerButton       from './HamburgerButton';
 

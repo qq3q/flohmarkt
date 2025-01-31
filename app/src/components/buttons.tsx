@@ -1,11 +1,8 @@
 import {Button} from 'antd';
 import React    from 'react';
+import {ButtonProps} from 'antd/es/button/button';
 
-export const AppButton = (props: {
-   children: React.ReactNode,
-
-   [index: string]: any,
-}) => {
+export const AppButton = (props: ButtonProps) => {
    const {children, ...rest} = props;
 
    return <Button
@@ -16,11 +13,7 @@ export const AppButton = (props: {
    </Button>
 }
 
-export const DeleteButton = (props: {
-   children?: React.ReactNode,
-
-   [index: string]: any,
-}) => {
+export const DeleteButton = (props: ButtonProps) => {
    const {children, ...rest} = props;
 
    return <AppButton
@@ -32,11 +25,7 @@ export const DeleteButton = (props: {
    </AppButton>
 }
 
-export const AddButton = (props: {
-   children?: React.ReactNode,
-
-   [index: string]: any,
-}) => {
+export const AddButton = (props: ButtonProps) => {
    const {children, ...rest} = props;
 
    return <AppButton
@@ -47,11 +36,7 @@ export const AddButton = (props: {
    </AppButton>
 }
 
-export const SaveButton = (props: {
-   children?: React.ReactNode,
-
-   [index: string]: any,
-}) => {
+export const SaveButton = (props: ButtonProps) => {
    const {children, ...rest} = props;
 
    return <AppButton
@@ -62,11 +47,7 @@ export const SaveButton = (props: {
    </AppButton>
 }
 
-export const ResetButton = (props: {
-   children?: React.ReactNode,
-
-   [index: string]: any,
-}) => {
+export const ResetButton = (props: ButtonProps) => {
    const {children, ...rest} = props;
 
    return <AppButton

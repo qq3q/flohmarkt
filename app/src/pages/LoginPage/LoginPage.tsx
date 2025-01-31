@@ -16,7 +16,7 @@ const LoginPage = observer(() => {
       try {
          await securityStore.login(username, password);
          navigate(RoutePath.Home);
-      } catch (e) {
+      } catch (_) {
          setFailed(true);
       }
    }

@@ -1,9 +1,10 @@
-import {Alert, Flex}        from 'antd';
-import PositiveIntegerInput from '../PositiveIntegerInput';
+import React                                     from 'react';
+import {Alert, Flex}                             from 'antd';
+import PositiveIntegerInput                      from '../PositiveIntegerInput';
 import {useEffect, useRef}                       from 'react';
 import {AMOUNT_BEFORE_ID_WIDTH, SELLER_ID_WIDTH} from './constants';
 import {UnitFormData}                            from '../../services/UnitFormService';
-import {FormValues, TouchKey} from '../../services/UnitFormService/types';
+import {FormValues, TouchKey}                    from '../../services/UnitFormService/types';
 
 // @todo add enter submit
 const Form = (props: {
@@ -39,22 +40,25 @@ const Form = (props: {
 
    // @todo ids are not unique if more than one form is used
 
-   return <Flex gap="middle" align="start">
-         <PositiveIntegerInput
-            ref={ref}
-            disabled={disabled}
-            style={{width: SELLER_ID_WIDTH}}
-            value={formData.formValues.sellerId}
-            onBlur={() => {
-               if (formData.touched.amount || formData.formValues.sellerId.length > 0) {
-                  onTouch('sellerId')
-               }
-            }}
-            onChange={(value: string) => onChange({sellerId: value})}
-         />
-         <Flex
+   return <Flex
+      gap="middle"
+      align="start"
+   >
+      <PositiveIntegerInput
+         ref={ref}
+         disabled={disabled}
+         style={{width: SELLER_ID_WIDTH}}
+         value={formData.formValues.sellerId}
+         onBlur={() => {
+            if (formData.touched.amount || formData.formValues.sellerId.length > 0) {
+               onTouch('sellerId')
+            }
+         }}
+         onChange={(value: string) => onChange({sellerId: value})}
+      />
+      <Flex
          gap="small"
-         >
+      >
          <PositiveIntegerInput
             disabled={disabled}
             style={{width: AMOUNT_BEFORE_ID_WIDTH}}
@@ -76,13 +80,13 @@ const Form = (props: {
             onBlur={() => onTouch('afterPointAmount')}
             onChange={(value: string) => onChange({afterPointAmount: value})}
          />
-         </Flex>
-         {errors.length > 0 && <Alert
-            message={errors.map(error => <span>{error}</span>)}
-            type="error"
-            showIcon
-         />}
       </Flex>
+      {errors.length > 0 && <Alert
+         message={errors.map(error => <span>{error}</span>)}
+         type="error"
+         showIcon
+      />}
+   </Flex>
 }
 
 export default Form;

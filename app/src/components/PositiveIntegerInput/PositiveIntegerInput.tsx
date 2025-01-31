@@ -1,5 +1,5 @@
-import {GetProps, Input}                    from 'antd';
 import React, {useImperativeHandle, useRef} from 'react';
+import {GetProps, Input}                    from 'antd';
 
 type OTPProps = GetProps<typeof Input>;
 

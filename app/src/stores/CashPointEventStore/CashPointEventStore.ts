@@ -63,7 +63,7 @@ export class CashPointEventStore {
             this._sellerIds = sellerIds;
             this._status = 'synced';
          })
-      } catch (e) {
+      } catch (_) {
          runInAction(() => {
             this._status = 'sync_failed';
          })
