@@ -1,18 +1,23 @@
-import {NavLink, Outlet, useNavigate} from 'react-router';
-import {observer}                     from 'mobx-react-lite';
+import {Outlet, useNavigate} from 'react-router';
+import {observer}            from 'mobx-react-lite';
 import {RoutePath}           from '../../container/AppRouterProvider/types';
-import LogoutButton          from '../../components/LogoutButton';
-import Navigation            from '../../components/Navigation';
 import React                 from 'react';
 import {useNavigationItems}  from '../../hooks/useNavigationItems';
-import {Flex, Space} from 'antd';
 import {useRootStore}        from '../../stores/RootStore';
-import * as AppLayout from '../../components/AppLayout'
+import * as AppLayout        from '../../components/AppLayout'
+import Header                from '../../components/Header';
 
 const RootPage = observer(() => {
-   const {securityStore} = useRootStore();
+   const rootStore = useRootStore();
+   const {
+      securityStore,
+      transactionStore,
+      cashPointEventStore
+   } = rootStore;
    const navigate = useNavigate();
    const navItems = useNavigationItems();
+   const syncing = transactionStore.syncing || cashPointEventStore.status === 'syncing';
+
    const onLogout = async() => {
       try {
          await securityStore.logout();
@@ -24,21 +29,12 @@ const RootPage = observer(() => {
 
    return <AppLayout.PageLayout>
       <AppLayout.PageHeader>
-         <Flex
-            justify="space-between"
-            align="center"
-         >
-            <Space>
-               <Navigation items={navItems}/>
-               <NavLink to={RoutePath.Home}>Floh 2.0</NavLink>
-            </Space>
-            <Space>
-               {securityStore.user}
-               <LogoutButton
-                  onClick={onLogout}
-               />
-            </Space>
-         </Flex>
+         <Header
+            disabled={syncing}
+            username={securityStore.user ?? ''}
+            navItems={navItems}
+            onLogout={onLogout}
+         />
       </AppLayout.PageHeader>
       <AppLayout.PageContent>
          <Outlet/>
