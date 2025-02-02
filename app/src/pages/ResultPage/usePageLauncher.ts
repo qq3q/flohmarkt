@@ -22,19 +22,5 @@ export const usePageLauncher = () => {
             await cashPointEventStore.sync();
          } )();
       }
-      else if (cashPointEventStore.status === 'synced') {
-         transactionStore.open();
-      }
-
-      return () => {
-         transactionStore.close();
-      }
-   }, [
-      navigate,
-      cashPointEventStore.status,
-      cashPointEventStore.sync,
-      securityStore.hasRole,
-      transactionStore.open,
-      transactionStore.close,
-   ]);
+   }, [navigate, cashPointEventStore, securityStore, transactionStore]);
 };

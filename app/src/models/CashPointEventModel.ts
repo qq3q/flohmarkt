@@ -15,7 +15,6 @@ export class CashPointEventModel {
    get transactionModels(): TransactionModel[] {
       if (this._transactionModels === null) {
          this._transactionModels = this.data.transactions.map(TransactionModel.createInstance);
-
       }
 
       return this._transactionModels;

@@ -15,6 +15,7 @@ export class CashPointEventStore {
          _event:     observable,
          _sellerIds: observable,
          status:     computed,
+         event:      computed,
          eventModel: computed,
          sync:       action,
          reset:      action,

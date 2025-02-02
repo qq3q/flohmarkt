@@ -10,6 +10,7 @@ export const useNavigationItems = (): MenuProps['items'] => {
    const items: MenuProps['items'] = [];
    if(securityStore.hasRole('ROLE_CASH_POINT')) {
       items.push({label: <Link to={RoutePath.CashPoint}>Kasse</Link>, key: '0'});
+      items.push({label: <Link to={RoutePath.Result}>Ergebnis</Link>, key: '1'});
    }
 
    return items;
