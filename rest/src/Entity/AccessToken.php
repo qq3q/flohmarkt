@@ -3,19 +3,21 @@
 namespace App\Entity;
 
 use App\Repository\AccessTokenRepository;
+use DateMalformedStringException;
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: AccessTokenRepository::class)]
 class AccessToken
 {
+   private const EXPIRATION_TIME = 3600; // seconds
+
    #[ORM\Id]
    #[ORM\GeneratedValue]
    #[ORM\Column]
    private ?int $id = null;
    #[ORM\Column(length: 255)]
    private ?string $token = null;
-   #[ORM\Column]
-   private ?bool $valid = null;
    #[ORM\Column]
    private \DateTimeImmutable $createdAt;
    #[ORM\Column]
@@ -43,16 +45,15 @@ class AccessToken
       return $this;
    }
 
-   public function isValid(): ?bool
+   /**
+    * @throws DateMalformedStringException
+    */
+   public function isValid(): bool
    {
-      return $this->valid;
-   }
+      $compareTime = (new DateTimeImmutable())
+         ->modify(sprintf('-%s seconds', self::EXPIRATION_TIME));
 
-   public function setValid(bool $valid): static
-   {
-      $this->valid = $valid;
-
-      return $this;
+      return $this->getCreatedAt() > $compareTime;
    }
 
    public function getCreatedAt(): \DateTimeImmutable

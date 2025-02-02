@@ -14,7 +14,7 @@ abstract class AppKernelTestCase extends KernelTestCase
    {
       parent::setUp();
       static::bootKernel();
-      $this->em = static::$kernel->getContainer()
+      $this->em = static::getContainer()
          ->get('doctrine')
          ->getManager();
    }

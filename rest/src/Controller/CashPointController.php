@@ -9,9 +9,10 @@ use App\Formatter\CashpointEventFormatter;
 use App\Formatter\QueuedUnitFormatter;
 use App\Formatter\SellerIdFormatter;
 use App\Repository\EventRepository;
-use App\Repository\QueuedUnitRepository;
 use App\Repository\SellerRepository;
-use App\Service\TransactionService;
+use App\Service\FetchQueuedUnitsService;
+use App\Service\FillTransactionService;
+use DateMalformedStringException;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -19,7 +20,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-use UnexpectedValueException;
 
 #[IsGranted('ROLE_CASH_POINT')]
 class CashPointController extends AbstractController
@@ -45,30 +45,47 @@ class CashPointController extends AbstractController
    }
 
    #[Route('/transaction', name: 'cash_point_post_transaction', methods: ['POST'])]
-   public function postTransaction(Request            $request,
-                                   TransactionService $srv): Response
+   public function postTransaction(Request                $request,
+                                   EntityManagerInterface $em,
+                                   EventRepository        $repo,
+                                   FillTransactionService $srv
+
+   ): Response
    {
       $data = json_decode($request->getContent());
       try
       {
-         $transaction = $srv->add($data);
+         $event = $repo->findActiveEvent();
+         if ($event === null)
+         {
+            return new Response('Active event not found.', Response::HTTP_BAD_REQUEST);
+         }
+         $transaction = new Transaction();
+         $event->addTransaction($transaction);
+         $srv->fill($transaction, $data);
+         $em->persist($transaction);
+         $em->flush();
 
          return new Response($transaction->getId(), Response::HTTP_CREATED);
-      } catch (InvalidDataException|UnexpectedValueException $e)
+      } catch (InvalidDataException $e)
       {
          return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
       }
    }
 
    #[Route('/transaction/{id}', name: 'cash_point_patch_transaction', methods: ['PATCH'])]
-   public function patchTransaction(Request            $request,
-                                    Transaction        $transaction,
-                                    TransactionService $srv): Response
+   public function patchTransaction(Request                $request,
+                                    Transaction            $transaction,
+                                    EntityManagerInterface $em,
+                                    FillTransactionService $srv
+   ): Response
    {
       $data = json_decode($request->getContent());
       try
       {
-         $srv->update($transaction, $data);
+         $srv->fill($transaction, $data);
+         $em->persist($transaction);
+         $em->flush();
 
          return new Response(null, Response::HTTP_NO_CONTENT);
       } catch (InvalidDataException $e)
@@ -87,8 +104,11 @@ class CashPointController extends AbstractController
       return new Response(null, Response::HTTP_NO_CONTENT);
    }
 
+   /**
+    * @throws DateMalformedStringException
+    */
    #[Route('/fetch-user-queued-units', name: 'cash_point_fetch_user_queued_units', methods: ['DELETE'])]
-   public function fetchUserQueuedUnits(QueuedUnitRepository $unitRepo, QueuedUnitFormatter $formatter): Response
+   public function fetchUserQueuedUnits(FetchQueuedUnitsService $srv, QueuedUnitFormatter $formatter): Response
    {
       $user = $this->getUser();
       if ($user === null)
@@ -101,10 +121,7 @@ class CashPointController extends AbstractController
             'User is not instance of ' . User::class,
             Response::HTTP_INTERNAL_SERVER_ERROR);
       }
-
-      $units = $unitRepo->clearByUserId($user->getId(), true);
-
-      // @todo ignore units older than 30 seconds (or similar time)
+      $units = $srv->fetch($user->getId());
 
       return $this->json($formatter->formatArray($units));
    }

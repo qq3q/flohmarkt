@@ -2,10 +2,8 @@
 
 namespace App\Controller;
 
-use App\Entity\AccessToken;
 use App\Entity\User;
-use App\Repository\AccessTokenRepository;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Service\AccessTokenService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -18,9 +16,8 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class SecurityController extends AbstractController
 {
    #[Route('/login', name: 'security_login', methods: ['POST'])]
-   public function login(#[CurrentUser] ?User   $user,
-                         AccessTokenRepository  $repo,
-                         EntityManagerInterface $em): Response
+   public function login(#[CurrentUser] ?User $user,
+                         AccessTokenService   $srv): Response
    {
       if (null === $user)
       {
@@ -28,17 +25,7 @@ class SecurityController extends AbstractController
             'message' => 'missing credentials',
          ], Response::HTTP_UNAUTHORIZED);
       }
-
-      // @todo extract
-      $repo->removeUserTokens($user->getUsername());
-      $accessToken = new AccessToken();
-      $token       = md5(uniqid());
-      $accessToken
-         ->setUsername($user->getUsername())
-         ->setToken($token)
-         ->setValid(true);
-      $em->persist($accessToken);
-      $em->flush();
+      $token = $srv->renew($user->getUsername());
 
       return new Response($token);
    }
@@ -54,19 +41,15 @@ class SecurityController extends AbstractController
    }
 
    #[Route('/logout', name: 'security_logout', methods: ['GET'])]
-   public function logout(#[CurrentUser] ?User   $user,
-                          Security               $security,
-                          AccessTokenRepository  $repo,
-                          EntityManagerInterface $em): Response
+   public function logout(#[CurrentUser] ?User $user,
+                          Security             $security,
+                          AccessTokenService   $srv): Response
    {
       if (null === $user)
       {
-         return $this->json([
-            'message' => 'You are not logged in.',
-         ], Response::HTTP_UNAUTHORIZED);
+         return new Response('You are not logged in.', Response::HTTP_UNAUTHORIZED);
       }
-      $repo->removeUserTokens($user->getUsername());
-      $em->flush();
+      $srv->remove($user->getUsername());
       $security->logout(false);
 
       return new Response('', Response::HTTP_NO_CONTENT);

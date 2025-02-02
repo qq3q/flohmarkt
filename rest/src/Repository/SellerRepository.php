@@ -11,38 +11,13 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class SellerRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
-    {
-        parent::__construct($registry, Seller::class);
-    }
+   public function __construct(ManagerRegistry $registry)
+   {
+      parent::__construct($registry, Seller::class);
+   }
 
-    public function findAllActiveSellers(): array {
-
-       return $this->findBy(['active' => true]);
-    }
-
-    //    /**
-    //     * @return Seller[] Returns an array of Seller objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('s')
-    //            ->andWhere('s.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('s.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
-
-    //    public function findOneBySomeField($value): ?Seller
-    //    {
-    //        return $this->createQueryBuilder('s')
-    //            ->andWhere('s.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+   public function findAllActiveSellers(): array
+   {
+      return $this->findBy(['active' => true]);
+   }
 }

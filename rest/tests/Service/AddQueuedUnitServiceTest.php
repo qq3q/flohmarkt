@@ -17,7 +17,7 @@ class AddQueuedUnitServiceTest extends AppKernelTestCase
    protected function setUp(): void
    {
       parent::setUp();
-      $this->sut = self::$kernel->getContainer()->get(AddQueuedUnitService::class);
+      $this->sut = self::getContainer()->get(AddQueuedUnitService::class);
       $this->user = new User();
       $this->user
          ->setUsername('test123')
