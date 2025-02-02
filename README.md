@@ -17,6 +17,7 @@ Floh 2
 
 ## Todos
 
+* Add controller tests
 * Stories für Komponenten nachrüsten
 * Frontend absichern: Wenn eine neue Transaktion gesichert wird und während des Requests ein Fehler auftritt,
   kann es passieren, dass die Transaktion gesichert wurde, das FE aber einen Fehler erhält. In diesem Fall würde
