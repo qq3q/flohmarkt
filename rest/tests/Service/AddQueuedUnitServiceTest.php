@@ -6,49 +6,26 @@ use App\Entity\QueuedUnit;
 use App\Entity\User;
 use App\Exception\InvalidDataException;
 use App\Service\AddQueuedUnitService;
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\Exception\ORMException;
-use Doctrine\ORM\OptimisticLockException;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use TypeError;
+use App\Tests\Util\AppKernelTestCase;
 
-class AddQueuedUnitServiceTest extends KernelTestCase
+class AddQueuedUnitServiceTest extends AppKernelTestCase
 {
-   private string $token = 'test_token_3409dsf';
-   private ?User $user;
-   private ?EntityManager $em;
+   private string                $token = 'test_token_3409dsf';
+   private ?User                 $user;
    private ?AddQueuedUnitService $sut;
 
-   /**
-    * @throws OptimisticLockException
-    * @throws ORMException
-    */
    protected function setUp(): void
    {
       parent::setUp();
-      $kernel = self::bootKernel();
-      $this->sut = $kernel->getContainer()->get(AddQueuedUnitService::class);
-      $this->em = $kernel->getContainer()
-         ->get('doctrine')
-         ->getManager();
-
+      $this->sut = self::$kernel->getContainer()->get(AddQueuedUnitService::class);
       $this->user = new User();
       $this->user
          ->setUsername('test123')
          ->setPassword('PASSWORD')
          ->setRoles(['ROLE_USER'])
          ->setDeviceToken($this->token);
-      $this->em->persist($this->user);
-      $this->em->flush();
-
-   }
-   protected function tearDown(): void
-   {
-      parent::tearDown();
-
-      // doing this is recommended to avoid memory leaks
-      $this->em->close();
-      $this->em = null;
+      $this->getEntityManager()->persist($this->user);
+      $this->getEntityManager()->flush();
    }
 
    /**
@@ -56,16 +33,17 @@ class AddQueuedUnitServiceTest extends KernelTestCase
     */
    public function testValidData(): void
    {
-      $oldUnits = $this->em->getRepository(QueuedUnit::class)->findAll();
-      $data = (object) [
-         'token' => $this->token,
+      $em = $this->getEntityManager();
+      $oldUnits = $em->getRepository(QueuedUnit::class)->findAll();
+      $data     = (object)[
+         'token'    => $this->token,
          'sellerId' => 1,
-         'amount' => 100.45
+         'amount'   => 100.45
       ];
       $this->sut->add($data);
 
       /** @var QueuedUnit[] $units */
-      $units = $this->em->getRepository(QueuedUnit::class)->findAll();
+      $units = $em->getRepository(QueuedUnit::class)->findAll();
       $this->assertSame(count($oldUnits) + 1, count($units));
 
       $lastUnit = array_pop($units);
@@ -79,10 +57,10 @@ class AddQueuedUnitServiceTest extends KernelTestCase
     */
    public function testUnknownToken(): void
    {
-      $data = (object) [
-         'token' => 'UNKNOWN',
+      $data = (object)[
+         'token'    => 'UNKNOWN',
          'sellerId' => 1,
-         'amount' => 100.45
+         'amount'   => 100.45
       ];
       $this->expectException(InvalidDataException::class);
 
@@ -94,10 +72,10 @@ class AddQueuedUnitServiceTest extends KernelTestCase
     */
    public function testInvalidSellerId(): void
    {
-      $data = (object) [
-         'token' => $this->token,
+      $data = (object)[
+         'token'    => $this->token,
          'sellerId' => 'INVALID',
-         'amount' => 100.45
+         'amount'   => 100.45
       ];
       $this->expectException(InvalidDataException::class);
 
@@ -109,10 +87,10 @@ class AddQueuedUnitServiceTest extends KernelTestCase
     */
    public function testInvalidAmount(): void
    {
-      $data = (object) [
-         'token' => $this->token,
+      $data = (object)[
+         'token'    => $this->token,
          'sellerId' => 1,
-         'amount' => 'INVALID'
+         'amount'   => 'INVALID'
       ];
       $this->expectException(InvalidDataException::class);
 
