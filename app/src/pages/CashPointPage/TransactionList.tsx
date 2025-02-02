@@ -25,10 +25,9 @@ const TransactionList = observer(() => {
          amount:    t.amount,
          selected,
          canSelect,
-         select:    canSelect ? () => transactionStore.open(t.data) : () => {
-         },
+         select:    canSelect ? () => transactionStore.open(t.data) : () => {},
       }
-   }), [eventModel, transactionStore, unsaved])
+   }), [eventModel, transactionStore.id, transactionStore.open, unsaved]);
 
    return <>
       <Flex
