@@ -3,6 +3,7 @@ import {QueuedUnitsStore}    from '../QueuedUnitsStore';
 import {SecurityStore}       from '../SecurityStore';
 import {TransactionStore} from '../TransactionStore';
 import {UnitsFormsStore}  from '../UnitsFormStore';
+import {CashPointViewStore}  from '../CashPointViewStore/CashPointViewStore';
 
 export class RootStore {
    public readonly cashPointEventStore: CashPointEventStore;
@@ -10,6 +11,7 @@ export class RootStore {
    public readonly securityStore: SecurityStore;
    public readonly transactionStore: TransactionStore;
    public readonly unitsFormStore: UnitsFormsStore;
+   public readonly cashPointViewStore: CashPointViewStore;
 
    constructor() {
       this.cashPointEventStore = new CashPointEventStore(this);
@@ -17,5 +19,6 @@ export class RootStore {
       this.securityStore = new SecurityStore(this);
       this.transactionStore = new TransactionStore(this);
       this.unitsFormStore = new UnitsFormsStore(this);
+      this.cashPointViewStore = new CashPointViewStore(this);
    }
 }

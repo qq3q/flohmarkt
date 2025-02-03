@@ -1,7 +1,6 @@
 import {Transaction} from '../stores/CashPointEventStore/types';
 
 export class TransactionModel {
-   private _amount: number | null = null;
 
    constructor(public readonly data: Transaction) {
    }
@@ -12,10 +11,7 @@ export class TransactionModel {
    }
 
    get amount(): number {
-      if (this._amount === null) {
-         this._amount = this.data.units.reduce((acc, unit) => acc + unit.amount, 0);
-      }
 
-      return this._amount;
+      return this.data.units.reduce((acc, unit) => acc + unit.amount, 0);
    }
 }

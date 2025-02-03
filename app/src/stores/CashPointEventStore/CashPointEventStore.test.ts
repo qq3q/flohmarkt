@@ -57,24 +57,6 @@ describe('stores/CashPointEventStore', () => {
       });
    });
 
-   describe('eventModel', () => {
-      it('should return an instance of CashPointEventModel', () => {
-         runInAction(() => {
-            store['_event'] = {
-               title:        'Test Event',
-               donationRate: 0.1,
-               transactions: []
-            };
-         });
-         const eventModel = store.eventModel;
-         expect(eventModel.data).toEqual({
-                                            title:        'Test Event',
-                                            donationRate: 0.1,
-                                            transactions: []
-                                         });
-      });
-   });
-
    describe('sync', () => {
       it('should set the status to "syncing", then "synced" if the request is successful', async() => {
          (activeEventRequest as jest.Mock).mockResolvedValue({

@@ -16,7 +16,6 @@ export class CashPointEventStore {
          _sellerIds: observable,
          status:     computed,
          event:      computed,
-         eventModel: computed,
          sync:       action,
          reset:      action,
       })
@@ -43,11 +42,6 @@ export class CashPointEventStore {
       }
 
       return this._sellerIds;
-   }
-
-   get eventModel(): CashPointEventModel {
-
-      return CashPointEventModel.createInstance(this.event);
    }
 
    async sync() {

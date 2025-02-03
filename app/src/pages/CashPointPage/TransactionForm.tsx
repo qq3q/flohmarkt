@@ -42,9 +42,9 @@ const paymentTypeOptions: CheckboxOptionType<PaymentType>[] = [{
 
 const TransactionForm = observer(() => {
    const {
-      cashPointEventStore,
       transactionStore,
-      unitsFormStore
+      unitsFormStore,
+      cashPointViewStore
    } = useRootStore();
 
    const paymentTypeHandler = (ev: RadioChangeEvent) => {
@@ -91,13 +91,7 @@ const TransactionForm = observer(() => {
             <Space style={{marginTop: '0.5em'}}>
                {(transactionStore.changed || unitsFormStore.changed) && !unitsFormStore.empty && unitsFormStore.valid &&
                   <SaveButton
-                     onClick={async() => {
-                        transactionStore.updateFromForm();
-                        await transactionStore.save();
-                        if (!transactionStore.lastSaveFailed) {
-                           await cashPointEventStore.sync();
-                        }
-                     }}
+                     onClick={cashPointViewStore.save}
                   />}
                {(transactionStore.changed || unitsFormStore.changed) && <ResetButton
                   onClick={() => {
@@ -109,13 +103,7 @@ const TransactionForm = observer(() => {
                      onClick={() => transactionStore.open()}
                   />}
                {!unitsFormStore.changed && transactionStore.id !== null && <DeleteConfirmButton
-                  onClick={async() => {
-                     await transactionStore.delete();
-                     if (!transactionStore.lastDeleteFailed) {
-                        await cashPointEventStore.sync();
-                        transactionStore.open();
-                     }
-                  }}
+                  onClick={cashPointViewStore.delete}
                />}
             </Space>
          </Card>

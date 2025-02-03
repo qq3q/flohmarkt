@@ -1,6 +1,5 @@
 import React                            from 'react';
 import {observer}                       from 'mobx-react-lite';
-import {useMemo}                        from 'react';
 import {Button, Flex, List, Typography} from 'antd';
 import {useRootStore}                   from '../../stores/RootStore';
 import {formatCurrency}                 from '../../utils/formatCurrency';
@@ -8,26 +7,9 @@ import {ReloadOutlined,}                from '@ant-design/icons';
 import {formatTimestamp}                from '../../utils/formatTimestamp';
 
 const TransactionList = observer(() => {
-   const {
-      cashPointEventStore,
-      transactionStore,
-      unitsFormStore,
-   } = useRootStore();
-   const eventModel = cashPointEventStore.eventModel;
-   const unsaved = transactionStore.changed || unitsFormStore.changed;
-
-   const data = useMemo(() => eventModel.transactionModels.map(t => {
-      const selected = transactionStore.id === t.data.id;
-      const canSelect = !selected && !unsaved;
-
-      return {
-         createdAt: t.data.createdAt,
-         amount:    t.amount,
-         selected,
-         canSelect,
-         select:    canSelect ? () => transactionStore.open(t.data) : () => {},
-      }
-   }), [eventModel, transactionStore.id, transactionStore.open, unsaved]);
+   const {cashPointViewStore} = useRootStore();
+   const unsaved = cashPointViewStore.changed;
+   const data = cashPointViewStore.transactionListData;
 
    return <>
       <Flex
@@ -36,7 +18,7 @@ const TransactionList = observer(() => {
       >
          <div>
             <Typography.Text strong>
-               {cashPointEventStore.eventModel.data.title}
+               {cashPointViewStore.eventTitle}
             </Typography.Text>
          </div>
          <Button
@@ -44,10 +26,7 @@ const TransactionList = observer(() => {
             type="text"
             shape="circle"
             icon={<ReloadOutlined/>}
-            onClick={async() => {
-               await cashPointEventStore.sync();
-               transactionStore.open();
-            }}
+            onClick={cashPointViewStore.refresh}
          />
       </Flex>
       <List

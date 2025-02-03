@@ -19,7 +19,7 @@ describe('models/CashPointEventModel', () => {
    });
 
    describe('transactionModels', () => {
-      it('should lazily initialize transaction models', () => {
+      it('should initialize transaction models', () => {
          const mockEvent: CashPointEvent = {
             title:        'Sample Event',
             donationRate: 10,
