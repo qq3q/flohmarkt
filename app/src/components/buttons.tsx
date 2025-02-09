@@ -62,6 +62,7 @@ export const ResetButton = (props: ButtonProps) => {
 export const ReloadButton = (props: ButtonProps) => {
 
    return <Button
+      title="Neu laden"
       type="text"
       shape="circle"
       icon={<ReloadOutlined/>}
