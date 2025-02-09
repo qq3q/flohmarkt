@@ -4,7 +4,7 @@ import {RoutePath}           from '../../container/AppRouterProvider/types';
 import React                 from 'react';
 import {useNavigationItems}  from '../../hooks/useNavigationItems';
 import {useRootStore}        from '../../stores/RootStore';
-import * as AppLayout        from '../../components/AppLayout'
+import {PageLayout}          from '../../components/AppLayout'
 import Header                from '../../components/Header';
 
 const RootPage = observer(() => {
@@ -27,19 +27,19 @@ const RootPage = observer(() => {
       }
    }
 
-   return <AppLayout.PageLayout>
-      <AppLayout.PageHeader>
+   return <PageLayout>
+      <PageLayout.Header>
          <Header
             disabled={syncing}
             username={securityStore.user ?? ''}
             navItems={navItems}
             onLogout={onLogout}
          />
-      </AppLayout.PageHeader>
-      <AppLayout.PageContent>
+      </PageLayout.Header>
+      <PageLayout.Content>
          <Outlet/>
-      </AppLayout.PageContent>
-   </AppLayout.PageLayout>
+      </PageLayout.Content>
+   </PageLayout>
 })
 
 export default RootPage;

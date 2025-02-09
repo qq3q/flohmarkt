@@ -1,35 +1,31 @@
 import {
    Card,
-   CheckboxOptionType,
    Col,
    Radio,
    RadioChangeEvent,
    Result,
-   Row,
    Space
-} from 'antd';
+}            from 'antd';
 import * as UnitUI
-   from '../../components/Unit';
+             from '../../components/Unit';
 import {
    formatCurrency
-} from '../../utils/formatCurrency';
+}            from '../../utils/formatCurrency';
 import {
    useRootStore
-} from '../../stores/RootStore';
+}            from '../../stores/RootStore';
 import React from 'react';
 import {
-   PaymentType
-} from '../../stores/CashPointEventStore/types';
-import {
    observer
-} from 'mobx-react-lite';
+}            from 'mobx-react-lite';
 import {
    AddButton,
    ResetButton,
    SaveButton
-} from '../../components/buttons';
+}            from '../../components/buttons';
 import DeleteConfirmButton
-   from '../../components/DeleteConfirmButton/DeleteConfirmButton';
+             from '../../components/DeleteConfirmButton/DeleteConfirmButton';
+import {Row} from '../../components/CustomAntd';
 
 const TransactionForm = observer(() => {
    const {
@@ -44,7 +40,7 @@ const TransactionForm = observer(() => {
 
    const showPrice = !unitsFormStore.changed && unitsFormStore.formDataArr.length > 1
 
-   return <Row gutter={8}>
+   return <Row>
       <Col
          xs={24}
          xl={showPrice ? 16 : 24}

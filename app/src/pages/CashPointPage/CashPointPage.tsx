@@ -4,7 +4,7 @@ import {observer}        from 'mobx-react-lite';
 import {usePageLauncher} from './usePageLauncher';
 import TransactionForm   from './TransactionForm';
 import TransactionList   from './TransactionList';
-import * as AppLayout    from '../../components/AppLayout';
+import {Layout}          from '../../components/AppLayout';
 import * as Alert        from '../../components/alerts';
 
 const CashPointPage = observer(() => {
@@ -19,17 +19,17 @@ const CashPointPage = observer(() => {
       || cashPointEventStore.status === 'not_synced'
       || transactionStore.syncing) {
 
-      return <AppLayout.Layout>
-         <AppLayout.Content>
-            <AppLayout.ContentLoading/>
-         </AppLayout.Content>
-      </AppLayout.Layout>
+      return <Layout>
+         <Layout.Content>
+            <Layout.ContentLoading/>
+         </Layout.Content>
+      </Layout>
    }
 
    if (cashPointEventStore.status === 'synced') {
 
-      return <AppLayout.Layout>
-         <AppLayout.Content>
+      return <Layout>
+         <Layout.Content>
             {transactionStore.opened && !transactionStore.syncing && <>
                {queuedUnitsStore.lastFetchFailed &&
                   <Alert.Warning
@@ -43,19 +43,19 @@ const CashPointPage = observer(() => {
                />}
                <TransactionForm/>
             </>}
-         </AppLayout.Content>
-         <AppLayout.Sider>
+         </Layout.Content>
+         <Layout.Sider>
             {transactionStore.opened && !transactionStore.syncing && <TransactionList/>}
-         </AppLayout.Sider>
-      </AppLayout.Layout>
+         </Layout.Sider>
+      </Layout>
    }
 
    // cashPointEventStore.status === 'sync_failed'
-   return <AppLayout.Layout>
-      <AppLayout.Content>
+   return <Layout>
+      <Layout.Content>
          <Alert.Error description="Die Veranstaltung konnte nicht geladen werden."/>
-      </AppLayout.Content>
-   </AppLayout.Layout>
+      </Layout.Content>
+   </Layout>
 });
 
 export default CashPointPage;

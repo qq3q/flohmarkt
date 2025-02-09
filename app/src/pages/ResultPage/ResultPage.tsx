@@ -2,11 +2,12 @@ import {useRootStore}     from '../../stores/RootStore';
 import React              from 'react';
 import {observer}         from 'mobx-react-lite';
 import {usePageLauncher}  from './usePageLauncher';
-import * as AppLayout     from '../../components/AppLayout';
+import {Layout}           from '../../components/AppLayout';
 import * as Alert         from '../../components/alerts';
 import SellerAmountsList  from './SellerAmountsList';
 import PaymentAmountsList from './PaymentAmountsList';
-import {Col, Row,}        from 'antd';
+import {Col,}             from 'antd';
+import {Row}              from '../../components/CustomAntd';
 
 const ResultPage = observer(() => {
    usePageLauncher();
@@ -17,18 +18,18 @@ const ResultPage = observer(() => {
    if (cashPointEventStore.status === 'syncing'
       || cashPointEventStore.status === 'not_synced') {
 
-      return <AppLayout.Layout>
-         <AppLayout.Content>
-            <AppLayout.ContentLoading/>
-         </AppLayout.Content>
-      </AppLayout.Layout>
+      return <Layout>
+         <Layout.Content>
+            <Layout.ContentLoading/>
+         </Layout.Content>
+      </Layout>
    }
 
    if (cashPointEventStore.status === 'synced') {
 
-      return <AppLayout.Layout>
-         <AppLayout.Content>
-            <Row gutter={8}>
+      return <Layout>
+         <Layout.Content>
+            <Row>
                <Col span={12}>
                   <SellerAmountsList/>
                </Col>
@@ -36,16 +37,16 @@ const ResultPage = observer(() => {
                   <PaymentAmountsList/>
                </Col>
             </Row>
-         </AppLayout.Content>
-      </AppLayout.Layout>
+         </Layout.Content>
+      </Layout>
    }
 
    // cashPointEventStore.status === 'sync_failed'
-   return <AppLayout.Layout>
-      <AppLayout.Content>
+   return <Layout>
+      <Layout.Content>
          <Alert.Error description="Die Veranstaltung konnte nicht geladen werden."/>
-      </AppLayout.Content>
-   </AppLayout.Layout>
+      </Layout.Content>
+   </Layout>
 });
 
 export default ResultPage;
