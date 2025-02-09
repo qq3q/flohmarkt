@@ -3,7 +3,9 @@ import {
    Table as AntdTable,
    ListProps, TableProps
 } from 'antd';
+import React from 'react';
 
+// @todo use class component for List and add Item (see Table below)
 export const List = (props: ListProps<any>) => {
 
    return <AntdList
@@ -15,10 +17,16 @@ export const List = (props: ListProps<any>) => {
 
 export const ListItem = AntdList.Item;
 
-export const Table = (props: TableProps) => {
+export class Table extends React.Component<TableProps> {
+   static Summary = AntdTable.Summary;
 
-   return <AntdTable
-      size="small"
-      {...props}
-   />
+   render() {
+      return <AntdTable
+         size="small"
+         {...this.props}
+      />
+   }
 }
+
+// @todo add Row
+

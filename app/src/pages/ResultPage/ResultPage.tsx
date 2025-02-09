@@ -1,11 +1,12 @@
-import {useRootStore}    from '../../stores/RootStore';
-import React             from 'react';
-import {observer}        from 'mobx-react-lite';
-import {usePageLauncher} from './usePageLauncher';
-import * as AppLayout    from '../../components/AppLayout';
-import * as Alert        from '../../components/alerts';
-import SellerAmountsList from './SellerAmountsList';
+import {useRootStore}     from '../../stores/RootStore';
+import React              from 'react';
+import {observer}         from 'mobx-react-lite';
+import {usePageLauncher}  from './usePageLauncher';
+import * as AppLayout     from '../../components/AppLayout';
+import * as Alert         from '../../components/alerts';
+import SellerAmountsList  from './SellerAmountsList';
 import PaymentAmountsList from './PaymentAmountsList';
+import {Col, Row,}        from 'antd';
 
 const ResultPage = observer(() => {
    usePageLauncher();
@@ -27,8 +28,14 @@ const ResultPage = observer(() => {
 
       return <AppLayout.Layout>
          <AppLayout.Content>
-            <SellerAmountsList/>
-            <PaymentAmountsList/>
+            <Row gutter={8}>
+               <Col span={12}>
+                  <SellerAmountsList/>
+               </Col>
+               <Col span={12}>
+                  <PaymentAmountsList/>
+               </Col>
+            </Row>
          </AppLayout.Content>
       </AppLayout.Layout>
    }

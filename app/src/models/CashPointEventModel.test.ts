@@ -1,4 +1,4 @@
-import {CashPointEventModel}               from './CashPointEventModel';
+import {CashPointEventModel}                            from './CashPointEventModel';
 import {TransactionModel}                               from './TransactionModel';
 import {CashPointEvent, PaymentType, Transaction, Unit} from '../stores/CashPointEventStore/types';
 
@@ -89,14 +89,26 @@ describe('models/CashPointEventModel', () => {
             transactions: [
                {
                   units: [
-                     {sellerId: 1, amount: 100.01} as Unit,
-                     {sellerId: 2, amount: 10.02} as Unit,
+                     {
+                        sellerId: 1,
+                        amount:   100.01
+                     } as Unit,
+                     {
+                        sellerId: 2,
+                        amount:   10.02
+                     } as Unit,
                   ]
                } as Transaction,
                {
                   units: [
-                     {sellerId: 2, amount: 200.11} as Unit,
-                     {sellerId: 3, amount: 20.12} as Unit,
+                     {
+                        sellerId: 2,
+                        amount:   200.11
+                     } as Unit,
+                     {
+                        sellerId: 3,
+                        amount:   20.12
+                     } as Unit,
                   ]
                } as Transaction,
             ],
@@ -120,22 +132,37 @@ describe('models/CashPointEventModel', () => {
             transactions: [
                {
                   paymentType: 'credit' as unknown,
-                  units: [
-                     {sellerId: 1, amount: 100.01} as Unit,
-                     {sellerId: 2, amount: 10.02} as Unit,
+                  units:       [
+                     {
+                        sellerId: 1,
+                        amount:   100.01
+                     } as Unit,
+                     {
+                        sellerId: 2,
+                        amount:   10.02
+                     } as Unit,
                   ]
                } as Transaction,
                {
                   paymentType: 'credit' as unknown,
-                  units: [
-                     {sellerId: 3, amount: 20.12} as Unit,
+                  units:       [
+                     {
+                        sellerId: 3,
+                        amount:   20.12
+                     } as Unit,
                   ]
                } as Transaction,
                {
                   paymentType: 'cash' as unknown,
-                  units: [
-                     {sellerId: 2, amount: 300.11} as Unit,
-                     {sellerId: 3, amount: 30.12} as Unit,
+                  units:       [
+                     {
+                        sellerId: 2,
+                        amount:   300.11
+                     } as Unit,
+                     {
+                        sellerId: 3,
+                        amount:   30.12
+                     } as Unit,
                   ]
                } as Transaction,
             ],
@@ -149,6 +176,60 @@ describe('models/CashPointEventModel', () => {
          expect(paymentTypeAmounts.size).toBe(2);
          expect(paymentTypeAmounts.get('credit' as unknown as PaymentType)).toBe(130.15);
          expect(paymentTypeAmounts.get('cash' as unknown as PaymentType)).toBe(330.23);
+      });
+   });
+
+   describe('totalAmount', () => {
+      it('should calculate the total amount for all transactions', () => {
+         const mockEvent: CashPointEvent = {
+            transactions: [
+               {
+                  units: [
+                     {amount: 100.01} as Unit,
+                     {amount: 200.02} as Unit,
+                  ]
+               } as Transaction,
+               {
+                  units: [
+                     {amount: 300.03} as Unit,
+                  ]
+               } as Transaction,
+            ],
+         } as CashPointEvent;
+
+         const instance = new CashPointEventModel(mockEvent);
+
+         const totalAmount = instance.totalAmount;
+
+         expect(totalAmount).toBe(600.06); // The sum of all amounts
+      });
+
+      it('should return 0 if there are no transactions', () => {
+         const mockEvent: CashPointEvent = {
+            transactions: [] as Transaction[],
+         } as CashPointEvent;
+
+         const instance = new CashPointEventModel(mockEvent);
+
+         const totalAmount = instance.totalAmount;
+
+         expect(totalAmount).toBe(0); // No transactions means total is 0
+      });
+
+      it('should handle cases where transactions have no units', () => {
+         const mockEvent: CashPointEvent = {
+            transactions: [
+               {
+                  units: [] as Unit[] // Empty units
+               } as Transaction
+            ],
+         } as CashPointEvent;
+
+         const instance = new CashPointEventModel(mockEvent);
+
+         const totalAmount = instance.totalAmount;
+
+         expect(totalAmount).toBe(0);
       });
    });
 });

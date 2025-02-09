@@ -59,4 +59,13 @@ export class CashPointEventModel {
 
       return resMap;
    }
+
+   get totalAmount(): number {
+      const cents = this.transactionModels.reduce(
+         (acc, curr) => acc + toCents(curr.amount),
+         0
+      );
+
+      return toEuros(cents);
+   }
 }

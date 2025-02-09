@@ -2,6 +2,7 @@ import {action, computed, makeObservable, observable, runInAction} from 'mobx';
 import {activeEventRequest, sellerIdsRequest,}                     from '../../requests/requests';
 import {CashPointEvent, CashPointEventStoreStatus, PaymentType,}   from './types';
 import {RootStore}                                                 from '../RootStore/RootStore';
+import {CashPointEventModel}                                       from '../../models/CashPointEventModel';
 
 export class CashPointEventStore {
    private _status: CashPointEventStoreStatus = 'not_synced';
@@ -52,6 +53,11 @@ export class CashPointEventStore {
       }
 
       return this._sellerIds;
+   }
+
+   get totalAmount(): number {
+
+      return CashPointEventModel.createInstance(this.event).totalAmount;
    }
 
    async sync() {

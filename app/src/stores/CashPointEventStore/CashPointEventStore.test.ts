@@ -2,6 +2,8 @@ import {CashPointEventStore}                  from './CashPointEventStore';
 import {runInAction}                          from 'mobx';
 import {activeEventRequest, sellerIdsRequest} from '../../requests/requests';
 import {RootStore}                            from '../RootStore/RootStore';
+import {CashPointEventModel}                  from '../../models/CashPointEventModel';
+import {CashPointEvent}                       from './types';
 
 jest.mock('../../requests/requests', () => ({
    activeEventRequest: jest.fn(),
@@ -69,6 +71,27 @@ describe('stores/CashPointEventStore', () => {
          expect(store.sellerIds).toEqual([1, 2, 3]);
       });
    });
+
+   describe('totalAmount', () => {
+      it('should calculate the total amount from the event', () => {
+         runInAction(() => {
+            store['_event'] = {} as CashPointEvent;
+         });
+
+         const mockCreateInstance = jest
+            .spyOn(CashPointEventModel, 'createInstance')
+            .mockImplementation((event) => ({
+               totalAmount: 100
+            } as unknown as CashPointEventModel));
+
+         expect(store.totalAmount).toBe(100);
+         mockCreateInstance.mockRestore();
+      });
+
+      it('should throw an error if the event is not initialized', () => {
+         expect(() => store.totalAmount).toThrow('CashPointEventStore is not initialized');
+      })
+   })
 
    describe('sync', () => {
       it('should set the status to "syncing", then "synced" if the request is successful', async() => {
