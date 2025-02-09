@@ -1,23 +1,31 @@
-import {useRootStore}             from '../../stores/RootStore';
-import {Typography} from 'antd';
-import {formatCurrency}           from '../../utils/formatCurrency';
-import {Table}                    from '../../components/CustomAntd';
+import {useRootStore}   from '../../stores/RootStore';
+import {Typography}     from 'antd';
+import {formatCurrency} from '../../utils/formatCurrency';
+import {Table}          from '../../components/CustomAntd';
+import React            from 'react';
+import TableHeader      from './TableHeader';
 
 const SellerAmountsList = () => {
-   const {resultViewStore, cashPointEventStore} = useRootStore();
+   const {
+      resultViewStore,
+      cashPointEventStore
+   } = useRootStore();
 
    return <Table
-      title={() => 'Verkäufer'}
+      title={() => <TableHeader
+         text="Verkäufer"
+         onClick={cashPointEventStore.sync}
+      />}
       pagination={false}
       rowKey="sellerId"
       dataSource={resultViewStore.sellerAmountsListData}
       columns={[{
-         title:     'Verkäufer',
-         dataIndex: 'sellerId',
-         key:       'sellerId',
+         title:            'Verkäufer',
+         dataIndex:        'sellerId',
+         key:              'sellerId',
          defaultSortOrder: 'ascend',
-         sorter: (a, b) => a.sellerId - b.sellerId,
-         render:    (_, record) => (record.sellerActive
+         sorter:           (a, b) => a.sellerId - b.sellerId,
+         render:           (_, record) => (record.sellerActive
             ? <Typography.Text>{record.sellerId}</Typography.Text>
             : <Typography.Text
                title="inaktiv"
@@ -27,9 +35,9 @@ const SellerAmountsList = () => {
          title:     'Betrag',
          dataIndex: 'amount',
          key:       'amount',
-         align: 'right',
-         sorter: (a, b) => a.amount - b.amount,
-         render: (amount) => formatCurrency(amount),
+         align:     'right',
+         sorter:    (a, b) => a.amount - b.amount,
+         render:    (amount) => formatCurrency(amount),
       }]}
       summary={(_) => (
          <Table.Summary.Row>

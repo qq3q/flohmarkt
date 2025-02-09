@@ -3,6 +3,8 @@ import {formatCurrency}  from '../../utils/formatCurrency';
 import {getPaymentTitle} from '../../utils/paymentTitle';
 import {Table}           from '../../components/CustomAntd';
 import {Typography}      from 'antd';
+import TableHeader       from './TableHeader';
+import React             from 'react';
 
 const PaymentAmountsList = () => {
    const {
@@ -11,7 +13,7 @@ const PaymentAmountsList = () => {
    } = useRootStore();
 
    return <Table
-      title={() => 'Zahlungsarten'}
+      title={() => <TableHeader text="Zahlungsarten" onClick={cashPointEventStore.sync}/>}
       pagination={false}
       rowKey="sellerId"
       dataSource={resultViewStore.paymentTypeListData}
