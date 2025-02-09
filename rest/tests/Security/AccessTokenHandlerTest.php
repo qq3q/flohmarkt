@@ -5,22 +5,25 @@ namespace App\Tests\Security;
 use App\Entity\AccessToken;
 use App\Repository\AccessTokenRepository;
 use App\Security\AccessTokenHandler;
+use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 
 class AccessTokenHandlerTest extends TestCase
 {
+   private EntityManagerInterface $em;
    private AccessTokenRepository $repository;
    private AccessTokenHandler    $sut;
 
    protected function setUp(): void
    {
+      $this->em         = $this->createMock(EntityManagerInterface::class);
       $this->repository = $this->createMock(AccessTokenRepository::class);
-      $this->sut        = new AccessTokenHandler($this->repository);
+      $this->sut        = new AccessTokenHandler($this->em, $this->repository);
    }
 
-   public function testGetUserBadgeFromWithValidToken(): void
+   public function testGetUserBadgeFrom_WithValidToken(): void
    {
       $validToken  = 'validToken';
       $username    = 'testUser';
@@ -34,10 +37,14 @@ class AccessTokenHandlerTest extends TestCase
          ->method('getUsername')
          ->willReturn($username);
 
+      $accessToken->expects($this->once())->method('touch');
+
       $this->repository->expects($this->once())
          ->method('findOneByToken')
          ->with($validToken)
          ->willReturn($accessToken);
+
+      $this->em->expects($this->once())->method('flush');
 
       $userBadge = $this->sut->getUserBadgeFrom($validToken);
 
@@ -45,7 +52,7 @@ class AccessTokenHandlerTest extends TestCase
       $this->assertSame($username, $userBadge->getUserIdentifier());
    }
 
-   public function testGetUserBadgeFromWithNullToken(): void
+   public function testGetUserBadgeFromWith_NullToken(): void
    {
       $invalidToken = 'invalidToken';
 
@@ -60,7 +67,7 @@ class AccessTokenHandlerTest extends TestCase
       $this->sut->getUserBadgeFrom($invalidToken);
    }
 
-   public function testGetUserBadgeFromWithExpiredOrInvalidAccessToken(): void
+   public function testGetUserBadgeFrom_WithInvalidAccessToken(): void
    {
       $invalidToken = 'expiredToken';
       $accessToken  = $this->createMock(AccessToken::class);
