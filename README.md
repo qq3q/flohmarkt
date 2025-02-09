@@ -17,6 +17,7 @@ Floh 2
 
 ## Todos
 
+* Wenn Request-Status 401, dann automatisch zu Login Seite navigieren
 * Add controller tests
 * Stories für Komponenten nachrüsten
 * Frontend absichern: Wenn eine neue Transaktion gesichert wird und während des Requests ein Fehler auftritt,
