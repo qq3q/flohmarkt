@@ -1,13 +1,12 @@
 import {useRootStore}    from '../../stores/RootStore';
-import {Table}           from 'antd';
 import {formatCurrency}  from '../../utils/formatCurrency';
 import {getPaymentTitle} from '../../utils/paymentTitle';
+import {Table}           from '../../components/CustomAntd';
 
 const PaymentAmountsList = () => {
    const {resultViewStore} = useRootStore();
 
    return <Table
-      size="small"
       title={() => 'Zahlungsarten'}
       pagination={false}
       rowKey="sellerId"

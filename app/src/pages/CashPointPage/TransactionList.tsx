@@ -5,7 +5,7 @@ import {useRootStore}                   from '../../stores/RootStore';
 import {formatCurrency}                 from '../../utils/formatCurrency';
 import {ReloadOutlined,}                from '@ant-design/icons';
 import {formatTimestamp} from '../../utils/formatTimestamp';
-import {List, ListItem}  from '../../components/List';
+import {List, ListItem}  from '../../components/CustomAntd';
 
 const TransactionList = observer(() => {
    const {cashPointViewStore} = useRootStore();

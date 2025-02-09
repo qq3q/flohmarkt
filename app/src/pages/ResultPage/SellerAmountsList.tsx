@@ -1,12 +1,12 @@
 import {useRootStore}             from '../../stores/RootStore';
-import {Table, Typography} from 'antd';
+import {Typography} from 'antd';
 import {formatCurrency}           from '../../utils/formatCurrency';
+import {Table}                    from '../../components/CustomAntd';
 
 const SellerAmountsList = () => {
    const {resultViewStore} = useRootStore();
 
    return <Table
-      size="small"
       title={() => 'Verkäufer'}
       pagination={false}
       rowKey="sellerId"
