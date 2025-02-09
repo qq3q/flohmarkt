@@ -31,15 +31,6 @@ import {
 import DeleteConfirmButton
    from '../../components/DeleteConfirmButton/DeleteConfirmButton';
 
-// @todo from backend
-const paymentTypeOptions: CheckboxOptionType<PaymentType>[] = [{
-   label: 'Cash',
-   value: 'Cash',
-}, {
-   label: 'PayPal',
-   value: 'PayPal',
-}]
-
 const TransactionForm = observer(() => {
    const {
       transactionStore,
@@ -64,7 +55,7 @@ const TransactionForm = observer(() => {
             style={{marginBottom: '0.5em'}}
          >
             <Radio.Group
-               options={paymentTypeOptions}
+               options={cashPointViewStore.paymentTypeOptions}
                value={transactionStore.paymentType}
                optionType="button"
                size="small"

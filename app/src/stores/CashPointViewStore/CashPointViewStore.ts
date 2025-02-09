@@ -2,6 +2,9 @@ import {RootStore}                        from '../RootStore/RootStore';
 import {action, computed, makeObservable} from 'mobx';
 import {CashPointEventModel}              from '../../models/CashPointEventModel';
 import {TransactionListData}              from './types';
+import {CheckboxOptionType}               from 'antd';
+import {PaymentType}                      from '../CashPointEventStore/types';
+import {getPaymentTitle}                  from '../../utils/paymentTitle';
 
 export class CashPointViewStore {
    constructor(public readonly rootStore: RootStore) {
@@ -21,6 +24,14 @@ export class CashPointViewStore {
    get changed() {
 
       return this.rootStore.transactionStore.changed || this.rootStore.unitsFormStore.changed;
+   }
+
+   get paymentTypeOptions(): CheckboxOptionType<PaymentType>[] {
+
+      return this.rootStore.cashPointEventStore.paymentTypes.map((paymentType) => ({
+         label: getPaymentTitle(paymentType),
+         value: paymentType,
+      }))
    }
 
    get transactionListData(): TransactionListData {

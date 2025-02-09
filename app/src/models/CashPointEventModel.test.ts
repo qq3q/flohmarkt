@@ -1,6 +1,6 @@
 import {CashPointEventModel}               from './CashPointEventModel';
-import {TransactionModel}                  from './TransactionModel';
-import {CashPointEvent, Transaction, Unit} from '../stores/CashPointEventStore/types';
+import {TransactionModel}                               from './TransactionModel';
+import {CashPointEvent, PaymentType, Transaction, Unit} from '../stores/CashPointEventStore/types';
 
 describe('models/CashPointEventModel', () => {
    describe('createInstance', () => {
@@ -80,6 +80,75 @@ describe('models/CashPointEventModel', () => {
          const foundTransaction = instance.findById(999);
 
          expect(foundTransaction).toBeNull();
+      });
+   });
+
+   describe('sellerAmounts', () => {
+      it('should return a map of seller amounts', () => {
+         const mockEvent: CashPointEvent = {
+            transactions: [
+               {
+                  units: [
+                     {sellerId: 1, amount: 100.01} as Unit,
+                     {sellerId: 2, amount: 10.02} as Unit,
+                  ]
+               } as Transaction,
+               {
+                  units: [
+                     {sellerId: 2, amount: 200.11} as Unit,
+                     {sellerId: 3, amount: 20.12} as Unit,
+                  ]
+               } as Transaction,
+            ],
+         } as CashPointEvent;
+
+         const instance = new CashPointEventModel(mockEvent);
+
+         const sellerAmounts = instance.sellerAmounts;
+
+         expect(sellerAmounts).toBeInstanceOf(Map);
+         expect(sellerAmounts.size).toBe(3);
+         expect(sellerAmounts.get(1)).toBe(100.01);
+         expect(sellerAmounts.get(2)).toBe(210.13);
+         expect(sellerAmounts.get(3)).toBe(20.12);
+      });
+   });
+
+   describe('paymentTypeAmounts', () => {
+      it('should return a map of payment type amounts', () => {
+         const mockEvent: CashPointEvent = {
+            transactions: [
+               {
+                  paymentType: 'credit' as unknown,
+                  units: [
+                     {sellerId: 1, amount: 100.01} as Unit,
+                     {sellerId: 2, amount: 10.02} as Unit,
+                  ]
+               } as Transaction,
+               {
+                  paymentType: 'credit' as unknown,
+                  units: [
+                     {sellerId: 3, amount: 20.12} as Unit,
+                  ]
+               } as Transaction,
+               {
+                  paymentType: 'cash' as unknown,
+                  units: [
+                     {sellerId: 2, amount: 300.11} as Unit,
+                     {sellerId: 3, amount: 30.12} as Unit,
+                  ]
+               } as Transaction,
+            ],
+         } as CashPointEvent;
+
+         const instance = new CashPointEventModel(mockEvent);
+
+         const paymentTypeAmounts = instance.paymentTypeAmounts;
+
+         expect(paymentTypeAmounts).toBeInstanceOf(Map);
+         expect(paymentTypeAmounts.size).toBe(2);
+         expect(paymentTypeAmounts.get('credit' as unknown as PaymentType)).toBe(130.15);
+         expect(paymentTypeAmounts.get('cash' as unknown as PaymentType)).toBe(330.23);
       });
    });
 });

@@ -1,10 +1,11 @@
 import React                            from 'react';
 import {observer}                       from 'mobx-react-lite';
-import {Button, Flex, List, Typography} from 'antd';
+import {Button, Flex, Typography} from 'antd';
 import {useRootStore}                   from '../../stores/RootStore';
 import {formatCurrency}                 from '../../utils/formatCurrency';
 import {ReloadOutlined,}                from '@ant-design/icons';
-import {formatTimestamp}                from '../../utils/formatTimestamp';
+import {formatTimestamp} from '../../utils/formatTimestamp';
+import {List, ListItem}  from '../../components/List';
 
 const TransactionList = observer(() => {
    const {cashPointViewStore} = useRootStore();
@@ -34,7 +35,7 @@ const TransactionList = observer(() => {
          bordered={false}
          dataSource={data}
          renderItem={item => {
-            return <List.Item
+            return <ListItem
                style={{
                   background: item.selected ? '#e0e0e0' : '',
                   cursor:     item.canSelect ? 'pointer' : 'not-allowed'
@@ -68,7 +69,7 @@ const TransactionList = observer(() => {
                      </Typography.Text>
                   </div>
                </Flex>
-            </List.Item>
+            </ListItem>
          }}
       /></>
 

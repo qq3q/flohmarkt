@@ -1,4 +1,4 @@
-export type TransactionListItem = {
+export interface TransactionListItem {
    createdAt: string | null;
    amount: number;
    selected: boolean;

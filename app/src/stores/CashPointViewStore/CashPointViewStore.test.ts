@@ -1,8 +1,12 @@
 // CashPointViewStore.test.ts
 import {CashPointViewStore}  from './CashPointViewStore';
 import {CashPointEventModel} from '../../models/CashPointEventModel';
+import {getPaymentTitle}     from '../../utils/paymentTitle';
 
 jest.mock('../../models/CashPointEventModel');
+jest.mock('../../utils/paymentTitle', () => ({
+   getPaymentTitle: jest.fn(),
+}));
 
 describe('stores/CashPointViewStore', () => {
    let rootStoreMock: any;
@@ -10,6 +14,7 @@ describe('stores/CashPointViewStore', () => {
    let cashPointEventModelMock: jest.Mocked<typeof CashPointEventModel>;
 
    beforeEach(() => {
+      (getPaymentTitle as jest.Mock).mockClear();
       rootStoreMock = {
          transactionStore:    {
             changed: false,
@@ -57,6 +62,30 @@ describe('stores/CashPointViewStore', () => {
          rootStoreMock.transactionStore.changed = false;
          rootStoreMock.unitsFormStore.changed = false;
          expect(cashPointViewStore.changed).toBe(false);
+      });
+   });
+
+   describe('paymentTypeOptions', () => {
+      it('should correctly return formatted paymentType options with labels and values', () => {
+         rootStoreMock.cashPointEventStore.paymentTypes = ['Cash', 'PayPal'];
+         (getPaymentTitle as jest.Mock)
+            .mockReturnValueOnce('CASH')
+            .mockReturnValueOnce('PAYPAL')
+
+         const paymentTypeOptions = cashPointViewStore.paymentTypeOptions;
+
+         expect(paymentTypeOptions).toEqual([
+                                               { label: 'CASH', value: 'Cash' },
+                                               { label: 'PAYPAL', value: 'PayPal' },
+                                            ]);
+      });
+
+      it('should return an empty array when no paymentTypes are present', () => {
+         rootStoreMock.cashPointEventStore.paymentTypes = [];
+
+         const paymentTypeOptions = cashPointViewStore.paymentTypeOptions;
+
+         expect(paymentTypeOptions).toEqual([]);
       });
    });
 

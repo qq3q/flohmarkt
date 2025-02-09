@@ -1,23 +1,24 @@
 import {action, computed, makeObservable, observable, runInAction} from 'mobx';
 import {activeEventRequest, sellerIdsRequest,}                     from '../../requests/requests';
-import {CashPointEvent, CashPointEventStoreStatus,}                from './types';
-import {CashPointEventModel}                                       from '../../models/CashPointEventModel';
+import {CashPointEvent, CashPointEventStoreStatus, PaymentType,}   from './types';
 import {RootStore}                                                 from '../RootStore/RootStore';
 
 export class CashPointEventStore {
    private _status: CashPointEventStoreStatus = 'not_synced';
    private _event: CashPointEvent | null = null;
+   private _paymentTypes: PaymentType[] | null = null;
    private _sellerIds: number[] | null = null;
 
    constructor(public readonly rootStore: RootStore) {
-      makeObservable<CashPointEventStore, '_status' | '_event' | '_sellerIds'>(this, {
-         _status:    observable,
-         _event:     observable,
-         _sellerIds: observable,
-         status:     computed,
-         event:      computed,
-         sync:       action,
-         reset:      action,
+      makeObservable<CashPointEventStore, '_status' | '_event' | '_paymentTypes' | '_sellerIds'>(this, {
+         _status:       observable,
+         _event:        observable,
+         _paymentTypes: observable,
+         _sellerIds:    observable,
+         status:        computed,
+         event:         computed,
+         sync:          action,
+         reset:         action,
       })
    }
 
@@ -33,6 +34,15 @@ export class CashPointEventStore {
       }
 
       return this._event;
+   }
+
+   get paymentTypes(): PaymentType[] {
+      if(this._paymentTypes === null) {
+
+         throw new Error('CashPointEventStore is not initialized');
+      }
+
+      return this._paymentTypes;
    }
 
    get sellerIds(): number[] {
@@ -55,6 +65,8 @@ export class CashPointEventStore {
                                                ])
          runInAction(() => {
             this._event = data;
+            // @todo get payment types from server
+            this._paymentTypes = ['Cash', 'PayPal']
             this._sellerIds = sellerIds;
             this._status = 'synced';
          })

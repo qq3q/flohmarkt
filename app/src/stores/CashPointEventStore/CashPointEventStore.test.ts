@@ -44,6 +44,19 @@ describe('stores/CashPointEventStore', () => {
       });
    });
 
+   describe('paymentTypes', () => {
+      it('should throw an error if _paymentTypes is not initialized', () => {
+         expect(() => store.paymentTypes).toThrow('CashPointEventStore is not initialized');
+      });
+
+      it('should return the sellerIds when initialized', () => {
+         runInAction(() => {
+            store['_paymentTypes'] = ['Cash', 'PayPal'];
+         });
+         expect(store.paymentTypes).toEqual(['Cash', 'PayPal']);
+      });
+   });
+
    describe('sellerIds', () => {
       it('should throw an error if _sellerIds is not initialized', () => {
          expect(() => store.sellerIds).toThrow('CashPointEventStore is not initialized');

@@ -4,6 +4,8 @@ import {observer}        from 'mobx-react-lite';
 import {usePageLauncher} from './usePageLauncher';
 import * as AppLayout    from '../../components/AppLayout';
 import * as Alert        from '../../components/alerts';
+import SellerAmountsList from './SellerAmountsList';
+import PaymentAmountsList from './PaymentAmountsList';
 
 const ResultPage = observer(() => {
    usePageLauncher();
@@ -25,10 +27,9 @@ const ResultPage = observer(() => {
 
       return <AppLayout.Layout>
          <AppLayout.Content>
-            Result
+            <SellerAmountsList/>
+            <PaymentAmountsList/>
          </AppLayout.Content>
-         {/*<AppLayout.Sider>*/}
-         {/*</AppLayout.Sider>*/}
       </AppLayout.Layout>
    }
 
