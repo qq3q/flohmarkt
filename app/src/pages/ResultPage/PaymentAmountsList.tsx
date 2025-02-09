@@ -15,7 +15,7 @@ const PaymentAmountsList = () => {
    return <Table
       title={() => <TableHeader text="Zahlungsarten" onClick={cashPointEventStore.sync}/>}
       pagination={false}
-      rowKey="sellerId"
+      rowKey="paymentType"
       dataSource={resultViewStore.paymentTypeListData}
       columns={[{
          title:            'Zahlungsart',
