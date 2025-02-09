@@ -1,6 +1,7 @@
 import {Button} from 'antd';
 import React    from 'react';
 import {ButtonProps} from 'antd/es/button/button';
+import {ReloadOutlined} from '@ant-design/icons';
 
 export const AppButton = (props: ButtonProps) => {
    const {children, ...rest} = props;
@@ -56,4 +57,14 @@ export const ResetButton = (props: ButtonProps) => {
    >
       {children ?? 'Zurücksetzen'}
    </AppButton>
+}
+
+export const ReloadButton = (props: ButtonProps) => {
+
+   return <Button
+      type="text"
+      shape="circle"
+      icon={<ReloadOutlined/>}
+      {...props}
+   />
 }

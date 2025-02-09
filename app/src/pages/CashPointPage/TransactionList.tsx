@@ -1,11 +1,11 @@
-import React                      from 'react';
-import {observer}                 from 'mobx-react-lite';
-import {Button, Flex, Typography} from 'antd';
-import {useRootStore}             from '../../stores/RootStore';
-import {formatCurrency}           from '../../utils/formatCurrency';
-import {ReloadOutlined,}          from '@ant-design/icons';
-import {formatTimestamp}          from '../../utils/formatTimestamp';
-import {List}                     from '../../components/CustomAntd';
+import React              from 'react';
+import {observer}         from 'mobx-react-lite';
+import {Flex, Typography} from 'antd';
+import {useRootStore}     from '../../stores/RootStore';
+import {formatCurrency}   from '../../utils/formatCurrency';
+import {formatTimestamp}  from '../../utils/formatTimestamp';
+import {List}             from '../../components/CustomAntd';
+import {ReloadButton}     from '../../components/buttons';
 
 const TransactionList = observer(() => {
    const {cashPointViewStore} = useRootStore();
@@ -22,11 +22,8 @@ const TransactionList = observer(() => {
                {cashPointViewStore.eventTitle}
             </Typography.Text>
          </div>
-         <Button
+         <ReloadButton
             disabled={unsaved}
-            type="text"
-            shape="circle"
-            icon={<ReloadOutlined/>}
             onClick={cashPointViewStore.refresh}
          />
       </Flex>
