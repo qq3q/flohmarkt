@@ -1,5 +1,5 @@
-import {Flex, MenuProps, Space} from 'antd';
-import Navigation               from '../Navigation';
+import {Flex, MenuProps, Space, Typography} from 'antd';
+import Navigation                           from '../Navigation';
 import {NavLink}     from 'react-router';
 import {RoutePath}   from '../../container/AppRouterProvider/types';
 import LogoutButton  from '../LogoutButton';
@@ -20,8 +20,8 @@ const Header = (props: {
       <Space>
          <Navigation disabled={disabled} items={navItems}/>
          {disabled
-            ? <span>Floh 2.0</span>
-            :  <NavLink to={RoutePath.Home}>Floh 2.0</NavLink>
+            ? <Typography.Text disabled strong>Flohmarkt 2</Typography.Text>
+            : <NavLink to={RoutePath.Home}><Typography.Text strong>Flohmarkt 2</Typography.Text></NavLink>
          }
       </Space>
       <Space>

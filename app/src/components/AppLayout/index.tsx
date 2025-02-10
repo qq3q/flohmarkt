@@ -97,9 +97,12 @@ export class Layout extends React.Component<LayoutProps> {
       } = props;
 
       return <AntdLayout.Sider
-         collapsible={true}
          width="22em"
-         style={{padding: '0.5em'}}
+         style={{
+            padding: '0.5em',
+            height: "100vh",
+            borderLeft: "1px solid rgba(0, 0, 0, 0.1)", // Add vertical border here
+         }}
          {...rest}
       >
          {children}
