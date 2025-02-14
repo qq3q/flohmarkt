@@ -45,7 +45,7 @@ class AppFixtures extends Fixture
       $event = new Event();
       $event
          ->setTitle('Test event')
-         ->setDonationRate(0.1)
+         ->setDonationRate(0.15)
          ->setActive(true);
       $manager->persist($event);
 
