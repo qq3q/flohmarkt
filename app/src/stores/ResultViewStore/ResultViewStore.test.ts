@@ -13,7 +13,9 @@ describe('stores/ResultViewStore', () => {
       it('should return sorted seller amounts list with proper active status', () => {
          const mockCashPointEventStore = {
             sellerIds: [1, 2],
-            event:     {mockEvent: true},
+            event:     {
+               donationRate: 0.15,
+            },
          };
 
          const mockRootStore: RootStore = {
@@ -36,16 +38,22 @@ describe('stores/ResultViewStore', () => {
          expect(result).toEqual([
                                    {
                                       sellerId:     1,
+                                      donation:     0,
+                                      sellerAmount: 0,
                                       amount:       0,
                                       sellerActive: true
                                    },
                                    {
                                       sellerId:     2,
+                                      donation:     15,
+                                      sellerAmount: 85,
                                       amount:       100,
                                       sellerActive: true
                                    },
                                    {
                                       sellerId:     3,
+                                      donation:     22.5,
+                                      sellerAmount: 127.5,
                                       amount:       150,
                                       sellerActive: false
                                    },
@@ -55,7 +63,9 @@ describe('stores/ResultViewStore', () => {
       it('should handle empty seller amounts and active seller IDs', () => {
          const mockCashPointEventStore = {
             sellerIds: [],
-            event:     {mockEvent: true},
+            event:     {
+               donationRate: 0.15,
+            },
          };
 
          const mockRootStore: RootStore = {

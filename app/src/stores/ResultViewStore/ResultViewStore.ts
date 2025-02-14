@@ -1,7 +1,7 @@
 import {RootStore}                                 from '../RootStore/RootStore';
 import {computed, makeObservable}                  from 'mobx';
 import {PaymentTypeListData, SellerAmountListData} from './types';
-import {CashPointEventModel}                       from '../../models/CashPointEventModel';
+import {CashPointEventModel} from '../../models/CashPointEventModel';
 
 export class ResultViewStore {
    constructor(public readonly rootStore: RootStore) {
@@ -13,6 +13,7 @@ export class ResultViewStore {
 
    get sellerAmountsListData(): SellerAmountListData {
       const {cashPointEventStore} = this.rootStore;
+      const donationRate = cashPointEventStore.event.donationRate;
       const data: SellerAmountListData = [];
       const activeSellerIds = cashPointEventStore.sellerIds;
       const sellerAmounts = CashPointEventModel
@@ -20,8 +21,11 @@ export class ResultViewStore {
          .sellerAmounts;
       sellerAmounts
          .forEach((amount, sellerId) => {
+            const donation = Math.round(amount * donationRate * 100) / 100;
             data.push({
                          sellerId,
+                         donation,
+                         sellerAmount: Math.round((amount - donation) * 100) / 100,
                          amount,
                          sellerActive: activeSellerIds.includes(sellerId),
                       })
@@ -30,6 +34,8 @@ export class ResultViewStore {
          if (!sellerAmounts.has(sellerId)) {
             data.push({
                          sellerId,
+                         donation:     0.0,
+                         sellerAmount: 0.0,
                          amount:       0.0,
                          sellerActive: true,
                       })

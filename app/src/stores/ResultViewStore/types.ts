@@ -3,6 +3,8 @@ import {PaymentType} from '../CashPointEventStore/types';
 export interface SellerAmountListItem {
    sellerId: number,
    sellerActive: boolean,
+   donation: number,
+   sellerAmount: number
    amount: number,
 }
 
