@@ -31,5 +31,6 @@ export const useCashPointAndResultPageLauncher = (withTransaction: boolean) => {
          }
          cashPointEventStore.reset();
       }
+      // eslint-disable-next-line
    }, []);
 };

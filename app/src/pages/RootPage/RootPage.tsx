@@ -1,6 +1,5 @@
 import {Outlet, useNavigate} from 'react-router';
 import {observer}            from 'mobx-react-lite';
-import {RoutePath}           from '../../container/AppRouterProvider/types';
 import React                 from 'react';
 import {useNavigationItems}  from '../../hooks/useNavigationItems';
 import {useRootStore}        from '../../stores/RootStore';
