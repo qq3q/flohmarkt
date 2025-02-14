@@ -1,16 +1,16 @@
-import {useRootStore}     from '../../stores/RootStore';
-import React              from 'react';
-import {observer}         from 'mobx-react-lite';
-import {usePageLauncher}  from './usePageLauncher';
-import {Layout}           from '../../components/AppLayout';
-import * as Alert         from '../../components/alerts';
-import SellerAmountsList  from './SellerAmountsList';
-import PaymentAmountsList from './PaymentAmountsList';
-import {Col,}             from 'antd';
-import {Row}              from '../../components/CustomAntd';
+import {useRootStore}                      from '../../stores/RootStore';
+import React                               from 'react';
+import {observer}                          from 'mobx-react-lite';
+import {useCashPointAndResultPageLauncher} from '../useCashPointAndResultPageLauncher';
+import {Layout}                            from '../../components/AppLayout';
+import * as Alert                          from '../../components/alerts';
+import SellerAmountsList                   from './SellerAmountsList';
+import PaymentAmountsList                  from './PaymentAmountsList';
+import {Col,}                              from 'antd';
+import {Row}                               from '../../components/CustomAntd';
 
 const ResultPage = observer(() => {
-   usePageLauncher();
+   useCashPointAndResultPageLauncher(false);
    const {
       cashPointEventStore,
    } = useRootStore();

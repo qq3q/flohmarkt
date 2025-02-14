@@ -1,9 +1,9 @@
-import {useRootStore} from '../../stores/RootStore';
+import {useRootStore} from '../stores/RootStore';
 import {useNavigate}  from 'react-router';
 import {useEffect}    from 'react';
-import {RoutePath}    from '../../container/AppRouterProvider/types';
+import {RoutePath}    from '../container/AppRouterProvider/types';
 
-export const usePageLauncher = () => {
+export const useCashPointAndResultPageLauncher = (withTransaction: boolean) => {
    const {
       securityStore,
       cashPointEventStore,
@@ -20,21 +20,16 @@ export const usePageLauncher = () => {
       if (cashPointEventStore.status === 'not_synced') {
          (async () => {
             await cashPointEventStore.sync();
+            if (withTransaction && cashPointEventStore.status === 'synced') {
+               transactionStore.open();
+            }
          } )();
       }
-      else if (cashPointEventStore.status === 'synced') {
-         transactionStore.open();
-      }
-
       return () => {
-         transactionStore.close();
+         if(withTransaction) {
+            transactionStore.close();
+         }
+         cashPointEventStore.reset();
       }
-   }, [
-      navigate,
-      cashPointEventStore.status,
-      cashPointEventStore.sync,
-      securityStore.hasRole,
-      transactionStore.open,
-      transactionStore.close,
-   ]);
+   }, []);
 };

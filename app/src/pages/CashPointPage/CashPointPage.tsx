@@ -1,14 +1,14 @@
-import {useRootStore}    from '../../stores/RootStore';
-import React             from 'react';
-import {observer}        from 'mobx-react-lite';
-import {usePageLauncher} from './usePageLauncher';
-import TransactionForm   from './TransactionForm';
-import TransactionList   from './TransactionList';
-import {Layout}          from '../../components/AppLayout';
-import * as Alert        from '../../components/alerts';
+import {useRootStore}                      from '../../stores/RootStore';
+import React                               from 'react';
+import {observer}                          from 'mobx-react-lite';
+import {useCashPointAndResultPageLauncher} from '../useCashPointAndResultPageLauncher';
+import TransactionForm                     from './TransactionForm';
+import TransactionList                     from './TransactionList';
+import {Layout}                            from '../../components/AppLayout';
+import * as Alert                          from '../../components/alerts';
 
 const CashPointPage = observer(() => {
-   usePageLauncher();
+   useCashPointAndResultPageLauncher(true);
    const {
       cashPointEventStore,
       transactionStore,
