@@ -21,7 +21,7 @@ const RootPage = observer(() => {
    const onLogout = async() => {
       try {
          await securityStore.logout();
-         navigate(RoutePath.Login);
+         navigate(0);
       } catch (e) {
          console.warn(e);
       }
