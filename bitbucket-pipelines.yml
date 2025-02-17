@@ -1,0 +1,77 @@
+image: qq3q/deploy:ubuntu24_php8_3_node20
+
+definitions:
+  caches:
+    php:
+      key:
+        files:
+          - rest/composer.lock
+      path: rest/vendor
+  steps:
+    - step: &app_build
+        name: App Build
+        script:
+          - cd app
+          - npm install
+          - rm -f .env.local
+          - touch .env.local
+          - echo "REACT_APP_REST_URL=$REST_URL" >> .env.local
+          - npm run build
+        caches:
+          - node
+        artifacts:
+          - app/build/**
+    - step: &app_deploy
+        name: App Deploy
+        script:
+          - cd app
+          #- rm -rf rest/var
+          - tar -czf /tmp/build.tar.gz ./build
+          - scp /tmp/build.tar.gz $USER@$SERVER:/tmp/
+          - ssh $USER@$SERVER "mkdir -p /app/floh2-app"
+          - ssh $USER@$SERVER "cd /app/floh2-app && tar -xzf /tmp/build.tar.gz && rm /tmp/build.tar.gz"
+          - ssh $USER@$SERVER chown -R www-data:www-data /app/floh2-app/build
+          - ssh $USER@$SERVER "rm -rf /app/floh2-app/last && mv /app/floh2-app/current /app/floh2-app/last && mv /app/floh2-app/build /app/floh2-app/current"
+    - step: &rest_build
+        name: Rest Build
+        script:
+          - cd rest
+          - export COMPOSER_ALLOW_SUPERUSER=1
+          - composer install
+          - rm -f .env.local
+          - touch .env.local
+          - echo "DATABASE_URL=$DATABASE_URL" >> .env.local
+        caches:
+          - composer
+          - php
+        artifacts:
+          - rest/vendor/**
+          - rest/.env.local
+    - step: &rest_deploy
+        name: Rest Deploy
+        script:
+          - cd rest
+          #- rm -rf rest/var
+          - tar -czf /tmp/rest.tar.gz .
+          - scp /tmp/rest.tar.gz $USER@$SERVER:/tmp/
+          - ssh $USER@$SERVER "mkdir -p /app/floh2-rest"
+          - ssh $USER@$SERVER "rm -rf /app/floh2-rest/tmp/ && mkdir /app/floh2-rest/tmp && cd /app/floh2-rest/tmp && tar -xzf /tmp/rest.tar.gz && rm /tmp/rest.tar.gz"
+          - ssh $USER@$SERVER chown -R www-data:www-data /app/floh2-rest/tmp
+          - ssh $USER@$SERVER "rm -rf /app/floh2-rest/last && mv /app/floh2-rest/current /app/floh2-rest/last && mv /app/floh2-rest/tmp /app/floh2-rest/current"
+    - step: &rest_migrate
+        name: Rest Migrate DB
+        script:
+          - ssh $USER@$SERVER "sudo -u www-data /app/floh2-rest/current/bin/console doctrine:migrations:migrate --no-interaction --all-or-nothing"
+
+pipelines:
+  custom:
+    app_and_rest:
+      - stage:
+          name: Deploy app and rest
+          deployment: Production
+          steps:
+            - step: *rest_build
+            - step: *rest_deploy
+            - step: *rest_migrate
+            - step: *app_build
+            - step: *app_deploy

@@ -1,0 +1,67 @@
+#POST https://floh2-rest.qq5q.de/queued-unit
+POST http://localhost:8000/queued-unit
+Accept: application/json
+Content-Type: application/json
+
+{
+  "token": "token1",
+  "sellerId": 126,
+  "amount": 7.0
+}
+
+###
+
+#POST https://floh2-rest.qq5q.de/queued-unit
+POST http://localhost:8000/queued-unit
+Accept: application/json
+Content-Type: application/json
+
+{
+  "token": "token2",
+  "sellerId": 126,
+  "amount": 7.0
+}
+
+###
+
+GET http://localhost:8000/queued-units/test_device_token
+Accept: application/json
+Content-Type: application/json
+
+<> 2024-11-15T123715.200.json
+<> 2024-11-15T122044.404.html
+<> 2024-11-15T122017.404.html
+
+###
+POST http://localhost:8000/login
+Accept: application/json
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "qwertz"
+}
+
+<> 2024-11-15T122352.404.html
+<> 2024-11-12T192332.200.json
+<> 2024-11-12T192023.200.json
+<> 2024-11-10T123601.200.json
+<> 2024-11-10T123439.500.html
+<> 2024-11-10T123129.401.json
+<> 2024-11-10T123030.401.json
+###
+
+GET http://localhost:8000/transactions
+Accept: application/json
+Authorization: Bearer d360ee9bb1982706d58720fd4f79b63d
+
+<> 2024-11-12T192342.200.json
+<> 2024-11-12T192034.403.html
+<> 2024-11-12T192001.403.html
+<> 2024-11-12T191844.500.html
+###
+
+GET http://localhost:8000/user
+Accept: application/json
+Authorization: Bearer 37b13cc6a9a0ee995f4ab7a91f346b2b
+#Authorization: Bearer d360ee9bb1982706d58720fd4f79b63d

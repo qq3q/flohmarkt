@@ -1,0 +1,95 @@
+POST http://localhost:8000/queued-unit
+Accept: application/json
+Content-Type: application/json
+
+{
+  "token": "test_device_token",
+  "sellerId": 1,
+  "amount": 5.2
+}
+
+
+<> 2024-11-15T122326.404.html
+<> 2024-11-12T194907.200.json
+<> 2024-11-12T194727.200.html
+<> 2024-11-12T193513.200.html
+<> 2024-11-10T123834.200.json
+<> 2024-11-10T123753.200.json
+<> 2024-11-08T145654.200.json
+<> 2024-11-08T145259.500.html
+
+###
+
+DELETE http://localhost:8000/fetch-user-queued-units
+Accept: application/json
+Authorization: Bearer cc022fb1b7c4a7a7937b55a2d5d5e374
+
+###
+
+GET http://localhost:8000/queued-units/test_device_token
+Accept: application/json
+Content-Type: application/json
+
+<> 2024-11-15T123715.200.json
+<> 2024-11-15T122044.404.html
+<> 2024-11-15T122017.404.html
+
+###
+
+POST http://localhost:8000/login
+Accept: application/json
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "qwertz"
+}
+
+<> 2024-11-15T122352.404.html
+<> 2024-11-12T192332.200.json
+<> 2024-11-12T192023.200.json
+<> 2024-11-10T123601.200.json
+<> 2024-11-10T123439.500.html
+<> 2024-11-10T123129.401.json
+<> 2024-11-10T123030.401.json
+###
+
+GET http://localhost:8000/active-event
+Accept: application/json
+Authorization: Bearer 81a30d70bd82994f1274d3c22db78eed
+
+<> 2024-11-12T192342.200.json
+<> 2024-11-12T192034.403.html
+<> 2024-11-12T192001.403.html
+<> 2024-11-12T191844.500.html
+###
+
+POST http://localhost:8000/transaction
+Accept: application/json
+Authorization: Bearer 81a30d70bd82994f1274d3c22db78eed
+
+{
+  "paymentType": "PayPal",
+  "units": [{
+    "sellerId": 1,
+    "amount": 4.2
+  }]
+}
+###
+
+PATCH http://localhost:8000/transaction/3
+Accept: application/json
+Authorization: Bearer 81a30d70bd82994f1274d3c22db78eed
+
+{
+  "paymentType": "Cash",
+  "units": [{
+    "sellerId": 1,
+    "amount": 5.2
+  }]
+}
+###
+
+DELETE http://localhost:8000/transaction/2
+Accept: application/json
+Authorization: Bearer 81a30d70bd82994f1274d3c22db78eed
