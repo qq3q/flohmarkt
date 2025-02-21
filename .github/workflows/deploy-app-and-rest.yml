@@ -3,6 +3,8 @@ name: Deploy App and Rest
 on:
   workflow_dispatch: # Ermöglicht das manuelle Auslösen des Workflows
   push:
+    tags:
+      - 'v*.*.*'
     branches:
       - main # Der Workflow wird bei einem Push auf den "main"-Branch ausgeführt
 
