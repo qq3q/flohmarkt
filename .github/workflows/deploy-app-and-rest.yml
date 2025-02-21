@@ -53,6 +53,12 @@ jobs:
           name: app-build
           path: app/build
 
+      - name: Set up SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
       - name: Copy build to remote server
         run: |
           tar -czf /tmp/build.tar.gz ./app/build
@@ -103,6 +109,12 @@ jobs:
         with:
           name: rest-build
           path: rest
+
+      - name: Set up SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
 
       - name: Copy rest to remote server
         run: |
