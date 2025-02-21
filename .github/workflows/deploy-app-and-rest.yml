@@ -92,12 +92,12 @@ jobs:
           export COMPOSER_ALLOW_SUPERUSER=1
           composer install
 
-      - name: Create local .env file
-        run: |
-          cd rest
-          rm -f .env.local
-          touch .env.local
-          echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env.local
+#      - name: Create local .env file
+#        run: |
+#          cd rest
+#          rm -f .env.local
+#          touch .env.local
+#          echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env.local
 
       - name: Upload Rest Build Artifacts
         uses: actions/upload-artifact@v4
@@ -136,6 +136,12 @@ jobs:
           ssh ${{ secrets.USER }}@${{ secrets.SERVER }} "rm -rf /app/floh2-rest/tmp/ && mkdir /app/floh2-rest/tmp && cd /app/floh2-rest/tmp && tar -xzf /tmp/rest.tar.gz && rm /tmp/rest.tar.gz"
           ssh ${{ secrets.USER }}@${{ secrets.SERVER }} "chown -R www-data:www-data /app/floh2-rest/tmp"
           ssh ${{ secrets.USER }}@${{ secrets.SERVER }} "rm -rf /app/floh2-rest/last && mv /app/floh2-rest/current /app/floh2-rest/last && mv /app/floh2-rest/tmp /app/floh2-rest/current"
+
+      - name: Create local .env file on remote server
+        run: |
+          ssh ${{ secrets.USER }}@${{ secrets.SERVER }} "echo 'DATABASE_URL=${{ secrets.DATABASE_URL }}' > /app/floh2-rest/current/.env.local"
+          ssh ${{ secrets.USER }}@${{ secrets.SERVER }} "chown www-data:www-data /app/floh2-rest/current/.env.local" 
+      
 
   rest_migrate:
     name: Rest Migrate DB
