@@ -1,0 +1,122 @@
+name: Deploy App and Rest
+
+on:
+  workflow_dispatch: # Ermöglicht das manuelle Auslösen des Workflows
+  push:
+    branches:
+      - main # Der Workflow wird bei einem Push auf den "main"-Branch ausgeführt
+
+jobs:
+  app_build:
+    name: App Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: |
+          cd app
+          npm install
+
+      - name: Create local .env file
+        run: |
+          cd app
+          rm -f .env.local
+          touch .env.local
+          echo "REACT_APP_REST_URL=${{ secrets.REST_URL }}" >> .env.local
+
+      - name: Build the app
+        run: |
+          cd app
+          npm run build
+
+      - name: Upload App Build Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: app-build
+          path: app/build
+
+  app_deploy:
+    name: App Deploy
+    needs: app_build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download App Build Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: app-build
+          path: app/build
+
+      - name: Copy build to remote server
+        run: |
+          tar -czf /tmp/build.tar.gz ./app/build
+          scp /tmp/build.tar.gz ${{ secrets.USER }}@${{ secrets.SERVER }}:/tmp/
+          ssh ${{ secrets.USER }}@${{ secrets.SERVER }} "mkdir -p /app/floh2-app"
+          ssh ${{ secrets.USER }}@${{ secrets.SERVER }} "cd /app/floh2-app && tar -xzf /tmp/build.tar.gz && rm /tmp/build.tar.gz"
+          ssh ${{ secrets.USER }}@${{ secrets.SERVER }} "chown -R www-data:www-data /app/floh2-app/build"
+          ssh ${{ secrets.USER }}@${{ secrets.SERVER }} "rm -rf /app/floh2-app/last && mv /app/floh2-app/current /app/floh2-app/last && mv /app/floh2-app/build /app/floh2-app/current"
+
+  rest_build:
+    name: Rest Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.3
+
+      - name: Install dependencies
+        run: |
+          cd rest
+          export COMPOSER_ALLOW_SUPERUSER=1
+          composer install
+
+      - name: Create local .env file
+        run: |
+          cd rest
+          rm -f .env.local
+          touch .env.local
+          echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env.local
+
+      - name: Upload Rest Build Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: rest-build
+          path: rest
+
+  rest_deploy:
+    name: Rest Deploy
+    needs: rest_build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Rest Build Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: rest-build
+          path: rest
+
+      - name: Copy rest to remote server
+        run: |
+          tar -czf /tmp/rest.tar.gz ./rest
+          scp /tmp/rest.tar.gz ${{ secrets.USER }}@${{ secrets.SERVER }}:/tmp/
+          ssh ${{ secrets.USER }}@${{ secrets.SERVER }} "mkdir -p /app/floh2-rest"
+          ssh ${{ secrets.USER }}@${{ secrets.SERVER }} "rm -rf /app/floh2-rest/tmp/ && mkdir /app/floh2-rest/tmp && cd /app/floh2-rest/tmp && tar -xzf /tmp/rest.tar.gz && rm /tmp/rest.tar.gz"
+          ssh ${{ secrets.USER }}@${{ secrets.SERVER }} "chown -R www-data:www-data /app/floh2-rest/tmp"
+          ssh ${{ secrets.USER }}@${{ secrets.SERVER }} "rm -rf /app/floh2-rest/last && mv /app/floh2-rest/current /app/floh2-rest/last && mv /app/floh2-rest/tmp /app/floh2-rest/current"
+
+  rest_migrate:
+    name: Rest Migrate DB
+    needs: rest_deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Migrate database
+        run: ssh ${{ secrets.USER }}@${{ secrets.SERVER }} "sudo -u www-data /app/floh2-rest/current/bin/console doctrine:migrations:migrate --no-interaction --all-or-nothing"
