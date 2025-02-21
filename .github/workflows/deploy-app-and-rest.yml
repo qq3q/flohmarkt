@@ -129,7 +129,8 @@ jobs:
 
       - name: Copy rest to remote server
         run: |
-          tar -czf /tmp/rest.tar.gz ./rest
+          cd rest
+          tar -czf /tmp/rest.tar.gz .
           scp /tmp/rest.tar.gz ${{ secrets.USER }}@${{ secrets.SERVER }}:/tmp/
           ssh ${{ secrets.USER }}@${{ secrets.SERVER }} "mkdir -p /app/floh2-rest"
           ssh ${{ secrets.USER }}@${{ secrets.SERVER }} "rm -rf /app/floh2-rest/tmp/ && mkdir /app/floh2-rest/tmp && cd /app/floh2-rest/tmp && tar -xzf /tmp/rest.tar.gz && rm /tmp/rest.tar.gz"
