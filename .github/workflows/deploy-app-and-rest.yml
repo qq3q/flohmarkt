@@ -103,6 +103,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: rest-build
+          include-hidden-files: true
           path: rest
 
   rest_deploy:
@@ -159,4 +160,4 @@ jobs:
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
       - name: Migrate database
-        run: ssh ${{ secrets.USER }}@${{ secrets.SERVER }} "sudo -u www-data /app/floh2-rest/current/bin/console doctrine:migrations:migrate --no-interaction --all-or-nothing"
+        run: ssh ${{ secrets.USER }}@${{ secrets.SERVER }} "sudo -u www-data php /app/floh2-rest/current/bin/console doctrine:migrations:migrate --no-interaction --all-or-nothing"
